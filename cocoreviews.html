@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Stories & Reviews | Cocopoy - Healthy Snacking Experiences</title>
+<meta name="description" content="Read what our community has to say about Cocopoy's natural snacks. Real stories, honest reviews, and healthy snacking experiences from across India."/>
+<meta name="keywords" content="Cocopoy reviews, healthy snack reviews, millets laddu feedback, natural snacks customer stories, Pollachi farm products reviews"/>
+<meta property="og:title" content="Customer Stories & Reviews | Cocopoy"/>
+<meta property="og:description" content="Explore real feedback from our community about our authentic Pollachi snacks."/>
+<meta property="og:type" content="website"/>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: { primary:"#0B113D",secondary:"#F47C20",accent:"#F9FAFB", surface:"#1A1A3D" },
+            fontFamily: { display: ["'Work Sans'", 'sans-serif'] }
+        }
+    }
+}
+</script>
+<style>
+  html, body { overflow-x: hidden; width: 100%; position: relative; }
+  body { background-color: #0B113D; color: white; font-family: 'Work Sans', sans-serif; }
+  img { max-width: 100%; height: auto; object-fit: cover; }
+  .review-card { background: rgba(26, 26, 61, 0.6); border: 1px solid rgba(244, 124, 32, 0.2); border-radius: 16px; padding: 20px; transition: all 0.3s ease; word-break: break-word; }
+  .review-card:hover { border-color: #F47C20; transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .star-rating { color: #F47C20; }
+  .pinned-badge { background: #F47C20; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
+  .admin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(244,124,32,0.2); border-radius: 12px; padding: 12px; color: white; width: 100%; outline: none; transition: border-color 0.3s; }
+  .admin-input:focus { border-color: #F47C20; }
+  .btn-primary { background: #F47C20; color: white; font-weight: 800; padding: 12px 24px; border-radius: 12px; transition: all 0.3s; }
+  .btn-primary:hover { background: #d6661a; transform: scale(1.02); }
+  @keyframes pulse-vibrant {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(244,124,32,0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 15px 45px rgba(244,124,32,0.6); }
+  }
+  .animate-pulse-vibrant { animation: pulse-vibrant 2s infinite ease-in-out; }
+</style>
+</head>
+<body class="antialiased">
+
+<div class="container mx-auto px-6 py-8 max-w-4xl pb-40">
+  <div class="mb-6">
+    <a href="index.html" class="text-secondary font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 hover:translate-x-1 transition-transform">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+      Back to Store
+    </a>
+  </div>
+
+  <!-- Sort Controls -->
+  <div class="flex items-center justify-between mb-8">
+     <h1 class="text-2xl md:text-4xl font-black text-white">Community Stories</h1>
+     <select id="reviewSort" onchange="resetAndLoad()" class="bg-surface border border-white/10 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-secondary transition-all text-white shadow-lg">
+        <option value="created_at_desc">Newest First</option>
+        <option value="created_at_asc">Oldest First</option>
+        <option value="rating_desc">Highest Rated</option>
+        <option value="rating_asc">Lowest Rated</option>
+      </select>
+  </div>
+
+
+  <!-- Reviews List -->
+  <div id="reviewsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="col-span-full text-center py-20 opacity-50">Loading stories...</div>
+  </div>
+
+  <!-- Load More Button -->
+  <div id="loadMoreContainer" class="mt-12 text-center">
+    <button id="loadMoreBtn" onclick="loadMore()" class="hidden px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:bg-white/10 hover:text-white transition-all">
+      Load More Stories...
+    </button>
+  </div>
+</div>
+
+<!-- The Full-Story Backdrop Modal -->
+<div id="storyModal" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center p-4 opacity-0 transition-all duration-500">
+  <div class="absolute inset-0 bg-primary/95 backdrop-blur-2xl"></div>
+  <div id="storyModalContent" class="relative bg-white dark:bg-surface-dark w-[95%] max-w-lg rounded-[2.5rem] p-8 md:p-10 shadow-2xl scale-90 transition-all duration-500 overflow-hidden flex flex-col max-h-[85vh] text-center">
+    <button onclick="closeStoryModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-primary dark:text-white hover:bg-secondary hover:text-white transition-all z-30">✕</button>
+    <div id="storyModalBody" class="overflow-y-auto custom-scrollbar flex-1 pr-2"></div>
+  </div>
+</div>
+
+
+<!-- Full Page Blur Backdrop for Form -->
+<div id="formBackdrop" class="fixed inset-0 z-[499] bg-primary/20 backdrop-blur-sm opacity-0 invisible transition-all duration-300 pointer-events-none"></div>
+
+<!-- Morphing Review Form Container -->
+<div class="fixed bottom-0 left-0 right-0 z-[500] pointer-events-none pb-12">
+  <div class="container mx-auto px-6 max-w-lg relative">
+    
+    <!-- The Morphing Container (Blue with Orange Border) -->
+    <div id="reviewFormContainer" class="pointer-events-auto mx-auto bg-primary/90 backdrop-blur-xl border-2 border-secondary rounded-[2.5rem] shadow-[0_15px_40px_rgba(244,124,32,0.2)] transition-all duration-300 ease-out overflow-hidden w-[240px] h-[65px]" style="max-width: 100%;">
+      
+      <!-- Button State (Vibrant Orange Text on Blue) -->
+      <button onclick="expandForm()" id="formExpandBtn" class="w-full h-full px-8 flex items-center justify-center gap-3 text-secondary font-black uppercase tracking-[0.2em] text-xs transition-all whitespace-nowrap">
+        ✍️ Write Your Story
+      </button>
+
+      <!-- Form State (Visible when expanded) -->
+      <div id="formContent" class="opacity-0 invisible transition-all duration-300 p-6 md:p-8 pt-8">
+        <div class="flex items-center gap-4 mb-8">
+          <button onclick="collapseForm()" class="shrink-0 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-secondary hover:border-secondary transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+          </button>
+          <h2 class="flex-1 text-base md:text-xl font-black text-white uppercase tracking-widest leading-tight">Share Your Story</h2>
+        </div>
+        <form id="addReviewForm" class="space-y-6">
+          <div class="space-y-2">
+            <label class="block text-[10px] font-black text-secondary uppercase tracking-[0.2em]">Verified Email</label>
+            <input id="revEmail" type="email" class="admin-input bg-white/5 border-white/10 opacity-60 cursor-not-allowed text-xs" readonly placeholder="Login to verify...">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-[10px] font-black text-secondary uppercase tracking-[0.2em]">Select Stars</label>
+            <select id="revRating" class="admin-input bg-primary border-secondary/40 text-white focus:border-secondary transition-all font-bold" required>
+              <option value="" disabled selected class="text-gray-400">✨ Choose your star rating...</option>
+              <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+              <option value="4">⭐⭐⭐⭐ (Very Good)</option>
+              <option value="3">⭐⭐⭐ (Good)</option>
+              <option value="2">⭐⭐ (Fair)</option>
+              <option value="1">⭐ (Poor)</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="block text-[10px] font-black text-secondary uppercase tracking-[0.2em]">Your Message</label>
+              <span id="charCount" class="text-[9px] font-black text-gray-500 uppercase tracking-widest">0 / 1200</span>
+            </div>
+            <textarea id="revComment" maxlength="1200" oninput="updateCharCount(this)" class="admin-input h-24 md:h-32 bg-primary border-secondary/40 focus:border-secondary transition-all text-sm md:text-base text-white" placeholder="Tell the world why you love Cocopoy..." required></textarea>
+          </div>
+          <script>
+            function updateCharCount(el) {
+              const count = el.value.length;
+              document.getElementById('charCount').textContent = count + ' / 1200';
+              if (count >= 1100) {
+                document.getElementById('charCount').classList.add('text-secondary');
+              } else {
+                document.getElementById('charCount').classList.remove('text-secondary');
+              }
+            }
+          </script>
+          <button type="submit" class="w-full py-5 bg-secondary text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-secondary/30 hover:scale-[1.02] active:scale-[0.98] transition-all">
+            Post My Story ✨
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Success Modal (Remains same but z-index ensured) -->
+<div id="successModal" style="display:none; position:fixed; inset:0; z-index:999999; align-items:center; justify-content:center; padding:24px;">
+  <div style="position:absolute; inset:0; background:rgba(11,17,61,0.95); backdrop-filter:blur(10px);"></div>
+  <div class="bg-white rounded-[2rem] p-10 max-w-sm w-full text-center relative z-10 scale-95 transition-transform duration-300 shadow-2xl" id="successModalContent">
+    <div class="text-7xl mb-6">🎉</div>
+    <h2 class="text-3xl font-black text-primary mb-3">Thank You!</h2>
+    <p class="text-gray-500 mb-8 font-medium leading-relaxed">Your story has been shared with the community. You are officially part of the Cocopoy family! ❤️</p>
+    <button onclick="closeSuccessModal()" class="w-full py-4 bg-secondary text-white font-black rounded-2xl shadow-xl shadow-secondary/20 hover:scale-105 transition-all uppercase tracking-widest">Back to Reviews</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/reviews.js"></script>
+<script src="js/utils.js"></script>
+
+<script>
+  function expandForm() {
+    const container = document.getElementById('reviewFormContainer');
+    const btn = document.getElementById('formExpandBtn');
+    const content = document.getElementById('formContent');
+    const backdrop = document.getElementById('formBackdrop');
+
+    // Show backdrop
+    backdrop.classList.remove('invisible', 'opacity-0');
+    backdrop.classList.add('opacity-100');
+
+    // Blue Container with Subtle Orange Border Glow
+    const isMobile = window.innerWidth < 768;
+    // Adjust height based on screen size (proper fit for mobile) - Made smaller per request
+    container.style.height = isMobile ? '75vh' : '580px';
+    container.style.width = isMobile ? '95%' : '100%';
+    container.style.backgroundColor = 'rgba(11, 17, 61, 0.9)';
+    container.style.boxShadow = '0 30px 100px rgba(0,0,0,0.8)';
+    container.style.borderWidth = '1px';
+    container.style.borderColor = 'rgba(244, 124, 32, 0.4)';
+    container.classList.add('overflow-y-auto');
+    
+    btn.style.opacity = '0';
+    setTimeout(() => {
+      btn.style.display = 'none';
+      content.classList.remove('invisible', 'opacity-0');
+      content.classList.add('opacity-100');
+      
+      // Pre-fill email
+      if (typeof getCurrentUser === 'function') {
+        getCurrentUser().then(user => {
+          if (user) document.getElementById('revEmail').value = user.email;
+          else document.getElementById('revEmail').value = 'Please login first';
+        });
+      }
+    }, 150);
+  }
+
+  function collapseForm() {
+    const container = document.getElementById('reviewFormContainer');
+    const btn = document.getElementById('formExpandBtn');
+    const content = document.getElementById('formContent');
+    const backdrop = document.getElementById('formBackdrop');
+
+    // Hide backdrop
+    backdrop.classList.remove('opacity-100');
+    backdrop.classList.add('opacity-0');
+    setTimeout(() => backdrop.classList.add('invisible'), 300);
+
+    content.classList.remove('opacity-100');
+    content.classList.add('opacity-0');
+    
+    setTimeout(() => {
+      content.classList.add('invisible');
+      btn.style.display = 'flex';
+      setTimeout(() => btn.style.opacity = '1', 10);
+      
+      // Back to Blue Button with Solid Orange Border
+      container.classList.remove('overflow-y-auto');
+      container.style.backgroundColor = 'rgba(11, 17, 61, 0.9)';
+      container.style.width = '240px';
+      container.style.height = '65px';
+      container.style.boxShadow = '0 15px 40px rgba(244, 124, 32, 0.2)';
+      container.style.borderWidth = '2px';
+      container.style.borderColor = '#F47C20';
+      btn.style.color = '#F47C20';
+    }, 150);
+  }
+
+  function openSuccessModal() {
+    collapseForm();
+    const modal = document.getElementById('successModal');
+    const content = document.getElementById('successModalContent');
+    modal.style.display = 'flex';
+    setTimeout(() => { content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
+  }
+
+  function closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    const content = document.getElementById('successModalContent');
+    content.classList.add('scale-95');
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+  }
+
+  let currentOffset = 0;
+  const pageSize = 6;
+  let isLastPage = false;
+
+  function resetAndLoad() {
+    currentOffset = 0;
+    isLastPage = false;
+    document.getElementById('reviewsList').innerHTML = '<div class="text-center py-20 opacity-50 animate-pulse">Filtering stories...</div>';
+    loadReviewsBatch();
+  }
+
+  async function loadReviewsBatch() {
+    const list = document.getElementById('reviewsList');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const sortVal = document.getElementById('reviewSort').value;
+    
+    let sortBy = 'created_at';
+    let ascending = false;
+    if (sortVal === 'created_at_asc') ascending = true;
+    if (sortVal === 'rating_desc') { sortBy = 'rating'; ascending = false; }
+    if (sortVal === 'rating_asc') { sortBy = 'rating'; ascending = true; }
+
+    try {
+      if (typeof db === 'undefined') return;
+      const reviews = await fetchAllReviews(pageSize, currentOffset, sortBy, ascending);
+      
+      if (currentOffset === 0) {
+        list.innerHTML = '';
+        window.allReviews = [];
+      }
+      
+      window.allReviews = window.allReviews.concat(reviews);
+
+      if (!reviews || reviews.length === 0) {
+        if (currentOffset === 0) list.innerHTML = '<div class="text-center py-20 opacity-50">No reviews match your criteria.</div>';
+        loadMoreBtn?.classList.add('hidden');
+        return;
+      }
+
+      const reviewsHTML = reviews.map((r, i) => {
+        const isLong = r.comment && r.comment.length > 50; // Threshold for truncation hint
+        return `
+          <div onclick="openStoryModal(${currentOffset + i})" class="group p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-secondary/30 hover:bg-white/10 cursor-pointer transition-all duration-300">
+            <div class="flex items-center gap-4 mb-4">
+              <img src="${r.user_avatar || 'https://ui-avatars.com/api/?name=' + r.user_name}" class="w-10 h-10 rounded-full border border-secondary/20 object-cover" alt="${r.user_name}">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-xs text-white uppercase truncate">${r.user_name}</span>
+                  <span class="text-[8px] text-gray-500 font-bold uppercase">${new Date(r.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short'})}</span>
+                </div>
+                <div class="star-rating text-sm mt-0.5">
+                  ${'★'.repeat(r.rating || 5)}${'☆'.repeat(5 - (r.rating || 5))}
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 italic truncate pr-4">"${r.comment}"</p>
+            ${isLong ? '<div class="text-[8px] text-secondary opacity-60 uppercase tracking-[0.2em] mt-3">Tap to expand story</div>' : ''}
+          </div>
+        `;
+      }).join('');
+
+      list.insertAdjacentHTML('beforeend', reviewsHTML);
+      currentOffset += reviews.length;
+      isLastPage = reviews.length < pageSize;
+      
+      if (isLastPage) loadMoreBtn?.classList.add('hidden');
+      else loadMoreBtn?.classList.remove('hidden');
+    } catch (err) {
+      console.error('Review load error:', err);
+      list.innerHTML = '<div class="text-center py-20 text-red-400">Error loading reviews.</div>';
+    }
+  }
+
+  function openStoryModal(index) {
+    const r = window.allReviews[index];
+    const modal = document.getElementById('storyModal');
+    const content = document.getElementById('storyModalContent');
+    const body = document.getElementById('storyModalBody');
+
+    const len = r.comment.length;
+    let fontSize = 'text-xl';
+    if (len > 300) fontSize = 'text-base';
+    if (len > 700) fontSize = 'text-xs';
+
+    body.innerHTML = `
+      <div class="flex flex-col h-full">
+        <!-- Static Header -->
+        <div class="shrink-0 flex flex-col items-center text-center pb-4">
+          <img src="${r.user_avatar || 'https://ui-avatars.com/api/?name=' + r.user_name}" class="w-20 h-20 rounded-full border-4 border-secondary/20 p-1 mb-4 mx-auto shadow-2xl object-cover">
+          <h3 class="text-xl font-black text-primary dark:text-accent uppercase tracking-widest mb-1">${r.user_name}</h3>
+          <div class="flex justify-center text-secondary text-2xl mb-2">
+            ${'★'.repeat(r.rating || 5)}${'☆'.repeat(5 - (r.rating || 5))}
+          </div>
+        </div>
+        
+        <!-- Scrollable Story Body -->
+        <div class="flex-1 overflow-y-auto px-4 custom-scrollbar py-2">
+          <p class="${fontSize} text-primary/70 dark:text-accent/70 italic leading-relaxed font-semibold whitespace-pre-wrap break-words text-left">
+            "${r.comment}"
+          </p>
+        </div>
+        
+        <!-- Static Footer -->
+        <div class="shrink-0 mt-6 pt-6 border-t border-secondary/10 w-full text-center">
+           <span class="text-[10px] font-black text-secondary uppercase tracking-[0.3em]">Cocopoy Verified Story</span>
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('pointer-events-none', 'opacity-0');
+    modal.classList.add('opacity-100');
+    setTimeout(() => { content.classList.remove('scale-90'); content.classList.add('scale-100'); }, 10);
+  }
+
+  function closeStoryModal() {
+    const modal = document.getElementById('storyModal');
+    const content = document.getElementById('storyModalContent');
+    content.classList.add('scale-90');
+    setTimeout(() => { 
+      modal.classList.add('opacity-0', 'pointer-events-none'); 
+      modal.classList.remove('opacity-100');
+    }, 300);
+  }
+
+  function loadMore() { loadReviewsBatch(); }
+
+
+  document.getElementById('addReviewForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const rating = document.getElementById('revRating').value;
+    const comment = document.getElementById('revComment').value;
+    if (!rating) { showToast('Please select a star rating!', 'warning'); return; }
+    btn.disabled = true;
+    btn.textContent = 'Posting Story...';
+    try {
+      const user = await getCurrentUser();
+      if (!user) {
+        // Save draft to localStorage before redirecting
+        localStorage.setItem('pending_review', JSON.stringify({ rating, comment }));
+        showToast('Saving your story... Please login to post it!', 'info');
+        setTimeout(() => window.location.href = 'cocologin.html?redirect=cocoreviews.html', 1500);
+        return;
+      }
+      
+      await addReview(rating, comment);
+      localStorage.removeItem('pending_review'); // Clear draft on success
+      openSuccessModal();
+      document.getElementById('addReviewForm').reset();
+      resetAndLoad();
+    } catch (err) {
+      console.error('Submission error:', err);
+      showToast('Error: ' + (err.message || 'Check database columns'), 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Post My Story ✨';
+    }
+  });
+
+  loadReviewsBatch();
+
+  // Check for pending review draft on load
+  (async () => {
+    const draftData = localStorage.getItem('pending_review');
+    if (!draftData) return;
+    
+    const draft = JSON.parse(draftData);
+    const user = await getCurrentUser();
+    
+    if (draft && user) {
+      // User just logged in and has a draft
+      setTimeout(() => {
+        expandForm();
+        document.getElementById('revRating').value = draft.rating;
+        document.getElementById('revComment').value = draft.comment;
+        updateCharCount(document.getElementById('revComment'));
+        showToast('Welcome back! Your story is ready to post.', 'success');
+      }, 1000); // Wait for page to settle
+    }
+  })();
+</script>
+</body>
+</html>

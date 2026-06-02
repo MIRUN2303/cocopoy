@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cocopoy - Cart & Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#0B113D","secondary":"#F47C20","background-light":"#FFFFFF","surface-light":"#F9FAFB","surface-dark":"#1A1A3D","text-primary":"#0B113D","text-secondary":"#60656F","border-color":"#E5E7EB"},fontFamily:{"display":["Work Sans","sans-serif"]},boxShadow:{soft:"0 4px 6px -1px rgba(0,0,0,0.05)"}}}}</script>
+<style>
+body{font-family:'Work Sans',sans-serif}
+.btn-primary{transition:background-color 0.2s;background:#0B113D;color:#fff}.btn-primary:hover{background:#F47C20}
+.distance-box{font-size:0.9rem;color:#555;margin-top:2px}
+.form-input{transition:all 0.2s}.form-input:focus{outline:2px solid transparent;box-shadow:0 0 0 2px #0B113D}
+@media(max-width:767px){main{padding-top:1.5rem!important}table{font-size:0.86rem}th,td{padding:0.75rem!important}.sticky{position:static}}
+/* Process Guidance Modal Style */
+#processModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; }
+.process-modal-content { background: white; width: 100%; max-width: 380px; padding: 30px; border-radius: 40px; text-align: left; box-shadow: 0 30px 60px rgba(0,0,0,0.3); animation: modalIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes modalIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.step-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+.step-icon { width: 24px; height: 24px; background: #0B113D; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; flex-shrink: 0; margin-top: 2px; }
+.step-text { font-size: 0.82rem; font-weight: 700; color: #0B113D; line-height: 1.4; }
+.highlight-orange { color: #F47C20; }
+.mini-note { font-size: 0.72rem; color: #60656F; margin-top: 4px; font-weight: 600; }
+.process-btn { width: 100%; padding: 18px; background: #E5E7EB; color: white; border: none; border-radius: 20px; font-weight: 900; font-size: 1rem; opacity: 0.5; cursor: not-allowed; transition: all 0.3s; }
+.process-btn.active { background: #F47C20; opacity: 1; cursor: pointer; }
+</style>
+</head>
+<body class="bg-background-light text-text-primary font-display">
+<div class="min-h-screen flex flex-col">
+
+<header class="sticky top-0 z-[100] bg-surface-light border-b border-border-color shadow-sm">
+  <div class="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8">
+    <a href="index.html"><img src="image/logo/fltlogo.png" alt="Cocopoy" class="h-10 w-auto sm:h-12 lg:h-14"/></a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="index.html">Dashboard</a>
+      <a class="text-sm font-bold text-secondary" href="cococart.html">Cart</a>
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="cocoorders.html">Orders</a>
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="cococontact.html">Contact</a>
+    </nav>
+    <button id="mobileMenuBtn" class="md:hidden text-2xl text-primary">☰</button>
+  </div>
+  
+  <nav id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-surface-light flex flex-col border-t shadow-2xl">
+    <a class="block px-6 py-3 text-sm" href="index.html">Dashboard</a>
+    <a class="block px-6 py-3 text-sm font-bold text-secondary" href="cococart.html">Cart</a>
+    <a class="block px-6 py-3 text-sm" href="cocoorders.html">Orders</a>
+    <a class="block px-6 py-3 text-sm" href="cococontact.html">Contact</a>
+  </nav>
+</header>
+
+<div id="address-popup" class="fixed inset-0 flex items-center justify-center bg-black/50 hidden z-50">
+  <div class="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+    <h3 class="text-lg font-semibold mb-4">Address Required</h3>
+    <p class="text-text-secondary mb-6">Please fill in Door Number, Landmark, Address, City and State before placing the order.</p>
+    <button id="close-popup" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors">OK</button>
+  </div>
+</div>
+
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="mb-6"><p class="text-sm text-text-secondary"><a class="hover:text-primary" href="index.html">Shop</a> / <span class="text-text-primary">Cart</span></p></div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+
+<div class="lg:col-span-2">
+  <div class="mb-6 flex justify-end">
+    <a href="index.html#products" class="px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow hover:bg-primary/90 transition-colors">Add More Products</a>
+  </div>
+  <h2 class="text-3xl font-bold mb-6 text-primary">Your Cart</h2>
+  <div id="cartLoading" class="text-center py-8 text-text-secondary">Loading cart...</div>
+  <div class="bg-surface rounded-lg shadow-soft overflow-hidden">
+    <div id="cart-items" class="divide-y divide-border-color"></div>
+  </div>
+</div>
+
+<div class="lg:col-span-1">
+  <div class="bg-surface rounded-lg shadow-soft p-6 sticky top-28">
+    <h3 class="text-2xl font-bold mb-6 text-primary">Checkout</h3>
+    <div class="space-y-4 mb-6">
+      <div class="flex justify-between text-text-secondary"><span>Subtotal</span><span class="font-medium text-text-primary">₹<span id="subtotal">0</span></span></div>
+      <div class="flex justify-between text-text-secondary"><span>Shipping</span><span class="font-medium text-text-primary">₹50</span></div>
+      <div class="border-t my-2"></div>
+      <div class="flex justify-between text-lg font-bold text-text-primary"><span>Total</span><span>₹<span id="total">50</span></span></div>
+    </div>
+    <div class="flex justify-between items-end mb-4">
+      <h4 class="font-bold">Delivery Details</h4>
+      <button type="button" id="backToSavedBtn" class="hidden text-xs text-secondary hover:underline font-bold bg-surface-dark px-3 py-1 rounded border border-secondary/30">Use Saved Address</button>
+    </div>
+    
+    <!-- Saved Address Template -->
+    <div id="savedAddressCard" class="hidden border-2 border-secondary bg-surface-dark rounded-xl p-5 mb-4 relative shadow-sm">
+      <div class="absolute top-4 right-4 text-secondary">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      </div>
+      <h5 class="font-bold text-lg mb-1 text-white" id="savedName"></h5>
+      <p class="text-white text-sm mb-2 font-medium">📞 <span id="savedPhone"></span></p>
+      <p class="text-white text-sm leading-relaxed" id="savedAddressText"></p>
+      <button type="button" id="useNewAddressBtn" class="mt-4 text-sm bg-secondary/10 text-secondary border border-secondary/30 px-4 py-2 rounded font-bold hover:bg-secondary/20 transition">Use a different address</button>
+    </div>
+
+    <form id="checkout-form" class="space-y-4">
+      <div id="addressInputGroup" class="space-y-4">
+        <input class="form-input w-full p-3 border rounded-lg" placeholder="Email" type="email" id="email"/>
+        <input class="form-input w-full p-3 border rounded-lg" placeholder="Phone" type="text" id="phone"/>
+        <input class="form-input w-full p-3 border rounded-lg" placeholder="Door Number" type="text" id="door" required/>
+        <input class="form-input w-full p-3 border rounded-lg" placeholder="Landmark" type="text" id="landmark" required/>
+        <input class="form-input w-full p-3 border rounded-lg" placeholder="Address" type="text" id="address" required/>
+        <div class="grid grid-cols-2 gap-4">
+          <input class="form-input w-full p-3 border rounded-lg" placeholder="City" type="text" id="city"/>
+          <input class="form-input w-full p-3 border rounded-lg" placeholder="State" type="text" id="state"/>
+        </div>
+        <input class="form-input w-full p-3 border rounded-lg" placeholder="Zip Code" type="text" id="zip"/>
+        <div class="distance-box">Distance from store: <span id="distance">--</span></div>
+        <div class="mb-4">
+          <h4 class="font-semibold mb-2">Estimated Delivery</h4>
+          <p id="delivery-date" class="text-text-secondary">--</p>
+          <button type="button" id="use-location" class="mt-3 w-full border border-primary text-primary font-semibold py-2 px-4 rounded-lg hover:bg-primary hover:text-white transition-colors">Use My Current Location</button>
+          <p id="delivery-note" class="text-sm text-text-secondary mt-2">Enter city or use location to check availability.</p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <h4 class="font-semibold mb-2">Payment</h4>
+        <div class="flex items-center border rounded-lg p-3"><input type="radio" name="payment" value="UPI" id="upi" checked/><label for="upi" class="ml-3 font-medium">UPI (GPay / PhonePe / PayTM)</label></div>
+      </div>
+      <p class="text-[11px] text-white text-center px-4 py-3 bg-surface-dark rounded-lg border border-secondary/30 shadow-sm leading-relaxed">
+        ⚠️ <strong>Note:</strong> Cancellation is available only <strong>within 7 hours</strong> and <strong>only if not yet shipped</strong>. Once shipped, cancellation is not possible.
+      </p>
+      <div class="hidden w-full bg-[#fef2f2] text-[#991b1b] font-medium text-sm py-3 px-4 rounded-lg text-center border border-[#fecaca] mt-4" id="desktopWarningBox">
+        <strong>⚠️ Desktop Ordering Disabled:</strong><br>We currently only support direct UPI app payments. Please open this website on your mobile phone to place your order.
+      </div>
+      <button class="hidden w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 btn-primary" type="submit" id="placeOrderBtn">Place Order</button>
+    </form>
+  </div>
+</div>
+
+  </div>
+</main>
+
+<!-- Payment Process Guidance Modal (Success Style) -->
+<div id="processModal">
+  <div class="process-modal-content">
+    <div style="text-align:center; margin-bottom: 24px;">
+      <div style="width: 60px; height: 60px; background: #ECFDF5; color: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 15px;">🛡️</div>
+      <h2 style="font-size: 1.5rem; font-weight: 900; color: #0B113D; margin-bottom: 5px;">Payment Steps</h2>
+      <p style="font-size: 0.8rem; color: #60656F; font-weight: 700;">Please follow these steps carefully.</p>
+    </div>
+
+    <div class="step-row">
+      <div class="step-icon">1</div>
+      <div class="step-text">COPY ID: <span class="highlight-orange">Copy your unique ID</span> first on the next page.</div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-icon">2</div>
+      <div class="step-text">
+        PAY: Choose App & pay bill amount.
+        <div class="mini-note">If NAME_ID isn't pre-filled, <span class="highlight-orange">PASTE it in notes</span>. If you miss it, send Name & ID as a message in the payment app.</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-icon">3</div>
+      <div class="step-text">UPLOAD: <span class="highlight-orange">payment proof screenshot is MANDATORY</span>. The "Place Order" button only appears after uploading.</div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-icon">4</div>
+      <div class="step-text">STATUS: After placing, you'll be taken to <span class="highlight-orange">Order Status</span> to track your delivery.</div>
+    </div>
+
+    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #F3F4F6;">
+      <label style="display: flex; gap: 10px; cursor: pointer; margin-bottom: 20px; align-items: flex-start;">
+        <input type="checkbox" id="agreeProcess" style="margin-top: 3px; accent-color: #F47C20;">
+        <span style="font-size: 0.75rem; font-weight: 800; color: #60656F;">I have read and agree to the process.</span>
+      </label>
+      
+      <button id="confirmProcessBtn" disabled class="process-btn">
+        CONTINUE TO PAYMENT
+      </button>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-surface mt-16 border-t"><div class="container mx-auto px-4 py-8 text-center text-text-secondary"><p>© 2025 Cocopoy. All rights reserved.</p></div></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js?v=1.4"></script>
+<script src="js/auth.js?v=1.4"></script>
+<script src="js/products.js?v=1.4"></script>
+<script src="js/cart.js?v=1.4"></script>
+<script src="js/orders.js?v=1.4"></script>
+<script src="js/utils.js?v=1.4"></script>
+
+<script>
+let latestDeliveryInfo = null;
+let latestDeliverySource = null;
+
+// City coordinates for delivery calc
+const cityCoords = { "pollachi":{lat:10.66,lng:77.008},"coimbatore":{lat:11.008,lng:76.996},"valparai":{lat:10.324,lng:76.935},"udumalpet":{lat:10.45,lng:77.342},"palani":{lat:10.217,lng:77.5},"tiruppur":{lat:11.109,lng:77.341},"erode":{lat:11.341,lng:77.717},"palakkad":{lat:10.787,lng:76.655} };
+
+function getCoordinatesFromAddress(city) {
+  return cityCoords[(city||'').toLowerCase().trim()] || null;
+}
+
+function updateDeliveryInfo() {
+  const city = document.getElementById('city')?.value?.trim();
+  const distanceEl = document.getElementById('distance');
+  const deliveryEl = document.getElementById('delivery-date');
+  const noteEl = document.getElementById('delivery-note');
+  const btn = document.getElementById('placeOrderBtn');
+  if (!city) { distanceEl.textContent='--'; deliveryEl.textContent='Enter a city'; return; }
+  const coords = getCoordinatesFromAddress(city);
+  if (!coords) { 
+    distanceEl.textContent = 'Standard'; 
+    deliveryEl.textContent = '3-5 Business Days (Courier)'; 
+    noteEl.textContent = 'Standard out-of-zone shipping applies.';
+    latestDeliveryInfo = { distance: 'Standard', message: '3-5 Business Days', available: true };
+    latestDeliverySource = 'address';
+    btn.disabled = false;
+    btn.classList.remove('opacity-60');
+    return; 
+  }
+  const dist = calculateDistance(STORE_LOCATION.lat,STORE_LOCATION.lng,coords.lat,coords.lng);
+  latestDeliveryInfo = calculateDeliverySchedule(dist);
+  latestDeliverySource = 'address';
+  distanceEl.textContent = latestDeliveryInfo.distance+' km';
+  deliveryEl.textContent = latestDeliveryInfo.message;
+  noteEl.textContent = latestDeliveryInfo.cutoffApplied ? 'Same day before 3 PM.' : 'Based on distance.';
+  btn.disabled = !latestDeliveryInfo.available;
+  btn.classList.toggle('opacity-60', !latestDeliveryInfo.available);
+
+  // Mobile enforcement check
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  const warning = document.getElementById('desktopWarningBox');
+  if (isMobile) {
+    btn.classList.remove('hidden');
+    if (warning) warning.classList.add('hidden');
+  } else {
+    btn.classList.add('hidden');
+    if (warning) warning.classList.remove('hidden');
+  }
+}
+
+// Render cart
+async function renderCart() {
+  const user = await getCurrentUser();
+  const loading = document.getElementById('cartLoading');
+  if (!user) { loading.innerHTML = 'Please <a href="cocologin.html" class="text-secondary font-bold underline">login</a> to view cart.'; return; }
+  const cart = await getCart();
+  loading.style.display = 'none';
+  const tbody = document.getElementById('cart-items');
+  const subtotalEl = document.getElementById('subtotal');
+  const totalEl = document.getElementById('total');
+  tbody.innerHTML = '';
+  if (!cart.length) { 
+    tbody.innerHTML = '<div class="p-12 text-center text-text-secondary"><p class="text-lg font-medium">Your cart is empty.</p><a href="index.html#products" class="mt-4 inline-block text-secondary font-bold hover:underline">Start shopping!</a></div>'; 
+    subtotalEl.textContent='0'; 
+    totalEl.textContent='50'; 
+    return; 
+  }
+  let subtotal = 0;
+  cart.forEach(item => {
+    if (!item.products) return;
+    const p = item.products;
+    const itemTotal = p.price * item.quantity;
+    subtotal += itemTotal;
+    
+    const card = document.createElement('div');
+    card.className = 'p-3 md:p-4 flex items-center gap-3 md:gap-6';
+    card.innerHTML = `
+      <div class="h-16 w-16 md:h-20 md:w-20 rounded-lg bg-cover bg-center shrink-0 border" style="background-image:url('${p.image_url}')"></div>
+      <div class="flex-grow min-w-0">
+        <div class="flex justify-between items-start mb-1">
+          <p class="font-bold text-sm md:text-base text-primary truncate pr-2">${p.name}</p>
+          <p class="font-bold text-sm text-secondary shrink-0">₹${itemTotal}</p>
+        </div>
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-text-secondary">₹${p.price} / unit</p>
+          <div class="flex items-center border rounded-lg bg-white overflow-hidden shadow-sm scale-90 md:scale-100">
+            <button class="px-2 md:px-3 py-1 hover:bg-gray-50 text-primary font-bold decrease" data-id="${item.id}" data-qty="${item.quantity}">-</button>
+            <span class="px-3 py-1 text-sm font-bold border-x">${item.quantity}</span>
+            <button class="px-2 md:px-3 py-1 hover:bg-gray-50 text-primary font-bold increase" data-id="${item.id}" data-qty="${item.quantity}">+</button>
+          </div>
+        </div>
+      </div>`;
+    tbody.appendChild(card);
+  });
+  subtotalEl.textContent = subtotal;
+  totalEl.textContent = subtotal + SHIPPING_COST;
+
+  // Pre-fill email from user
+  const profile = await getUserProfile();
+  if (user.email) {
+    const emailEl = document.getElementById('email');
+    emailEl.value = user.email;
+    emailEl.readOnly = true;
+    emailEl.classList.add('bg-gray-100', 'cursor-not-allowed', 'opacity-60');
+  }
+  if (profile?.phone) document.getElementById('phone').value = profile.phone;
+  if (profile?.address && Object.keys(profile.address).length > 0 && profile?.phone) {
+    if (profile.address.door) document.getElementById('door').value = profile.address.door;
+    if (profile.address.landmark) document.getElementById('landmark').value = profile.address.landmark;
+    if (profile.address.address) document.getElementById('address').value = profile.address.address;
+    if (profile.address.city) document.getElementById('city').value = profile.address.city;
+    if (profile.address.state) document.getElementById('state').value = profile.address.state;
+    if (profile.address.zip) document.getElementById('zip').value = profile.address.zip;
+    
+    // Fill the card
+    document.getElementById('savedName').textContent = profile.full_name || profile.username || 'Delivery Customer';
+    document.getElementById('savedPhone').textContent = profile.phone;
+    const addrStr = [profile.address.door, profile.address.address, profile.address.landmark, profile.address.city, profile.address.zip].filter(Boolean).join(', ');
+    document.getElementById('savedAddressText').textContent = addrStr;
+    
+    // Show card, hide inputs
+    document.getElementById('savedAddressCard').classList.remove('hidden');
+    document.getElementById('addressInputGroup').classList.add('hidden');
+
+    if (profile.address.city) updateDeliveryInfo();
+  }
+}
+
+// Use New Address Button
+document.getElementById('useNewAddressBtn')?.addEventListener('click', () => {
+  document.getElementById('savedAddressCard').classList.add('hidden');
+  document.getElementById('addressInputGroup').classList.remove('hidden');
+  document.getElementById('backToSavedBtn').classList.remove('hidden');
+  ['door', 'landmark', 'address', 'city', 'state', 'zip', 'phone'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  updateDeliveryInfo();
+});
+
+// Back to Saved Address Button
+document.getElementById('backToSavedBtn')?.addEventListener('click', () => {
+  document.getElementById('savedAddressCard').classList.remove('hidden');
+  document.getElementById('addressInputGroup').classList.add('hidden');
+  document.getElementById('backToSavedBtn').classList.add('hidden');
+  renderCart(); // Re-fetch from profile to refill the hidden form fields
+});
+
+// Cart buttons
+document.getElementById('cart-items').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const qty = parseInt(btn.dataset.qty);
+  if (btn.classList.contains('increase')) { await updateCartQuantity(id, qty+1); renderCart(); }
+  if (btn.classList.contains('decrease')) { await updateCartQuantity(id, qty-1); renderCart(); }
+});
+
+// Checkout form
+document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // Strictly enforce Mobile-only checkout
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (!isMobile) {
+    showToast('Orders can only be placed on a mobile device.', 'error');
+    return;
+  }
+
+  const cart = await getCart();
+  if (!cart.length) { showToast('Cart is empty!','warning'); return; }
+  
+  let customerName = "Customer";
+  let customerId = "GUEST";
+  try {
+    const user = await getCurrentUser();
+    if (user) {
+      customerId = user.id.substring(0, 8).toUpperCase();
+      const profile = await getUserProfile();
+      if (profile && profile.full_name) {
+        customerName = profile.full_name;
+      } else if (user.user_metadata && user.user_metadata.full_name) {
+        customerName = user.user_metadata.full_name;
+      }
+    }
+  } catch(e) { console.error('Note fetch error', e); }
+
+  const phoneInput = document.getElementById('phone').value.trim();
+  let phoneStr = phoneInput.replace(/\D/g, '');
+  if (phoneStr.startsWith('91') && phoneStr.length > 10) phoneStr = phoneStr.substring(2);
+  
+  if (phoneStr.length !== 10) {
+    showToast('Please enter a valid 10-digit mobile number to proceed.', 'error');
+    return;
+  }
+
+  const door = document.getElementById('door').value.trim();
+  const landmark = document.getElementById('landmark').value.trim();
+  const address = document.getElementById('address').value.trim();
+  let city = document.getElementById('city').value.trim();
+  let state = document.getElementById('state').value.trim();
+  const zip = document.getElementById('zip').value.trim();
+
+  // If they used live location, we don't strictly need city/state text
+  if (latestDeliverySource === 'browser') {
+    if (!city) city = 'GPS Location';
+    if (!state) state = 'GPS Location';
+  }
+
+  if (!door || !address) { 
+    showToast('Door Number and Address are required so the delivery driver can find you.', 'warning'); 
+    return; 
+  }
+  
+  if (!city) {
+    showToast('Please enter a City or use your Live Location', 'warning');
+    return;
+  }
+
+  if (latestDeliverySource !== 'browser') updateDeliveryInfo();
+  if (!latestDeliveryInfo) { showToast('Enter city or use location','warning'); return; }
+  if (!latestDeliveryInfo.available) { showToast('Delivery unavailable for this distance','error'); return; }
+
+  const deliveryAddress = { door, landmark, address, city, state, zip };
+  
+  // Save progress for recovery
+  localStorage.setItem('pending_order_data', JSON.stringify({
+    deliveryAddress,
+    latestDeliveryInfo,
+    customerName,
+    customerId
+  }));
+
+  // Automatically save these details back to their profile!
+  try {
+    await updateProfile({
+      phone: phoneStr,
+      address: deliveryAddress
+    });
+  } catch(e) { console.error('Could not auto-save profile', e); }
+
+  const totals = calculateCartTotal(cart);
+  const tn = `${customerName.replace(/\s+/g, '_').toUpperCase()}_${customerId}`;
+  const am = totals.total.toFixed(2);
+  const payUrl = `pay.html?am=${am}&tn=${encodeURIComponent(tn)}`;
+
+  // SHOW THE GUIDANCE MODAL INSTEAD OF DIRECT REDIRECT
+  const modal = document.getElementById('processModal');
+  const checkbox = document.getElementById('agreeProcess');
+  const confirmBtn = document.getElementById('confirmProcessBtn');
+
+  // Reset checkbox state each time modal opens
+  checkbox.checked = false;
+  confirmBtn.disabled = true;
+  confirmBtn.classList.remove('active');
+  modal.style.display = 'flex';
+
+  checkbox.onchange = (e) => {
+    confirmBtn.disabled = !e.target.checked;
+    confirmBtn.classList.toggle('active', e.target.checked);
+  };
+
+  confirmBtn.onclick = () => {
+    confirmBtn.textContent = 'REDIRECTING...';
+    window.location.href = payUrl;
+  };
+});
+
+
+// Close popup
+document.getElementById('close-popup').addEventListener('click', () => document.getElementById('address-popup').classList.add('hidden'));
+
+// Location button
+document.getElementById('use-location').addEventListener('click', function() {
+  if (!navigator.geolocation) { showToast('Location not supported','warning'); return; }
+  const locBtn = document.getElementById('use-location');
+  locBtn.textContent = 'Fetching precise location...';
+  document.getElementById('delivery-date').textContent = 'Checking location...';
+  
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    
+    // Reverse Geocode to fill address fields automatically
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+      const data = await res.json();
+      if (data && data.address) {
+        document.getElementById('city').value = data.address.city || data.address.town || data.address.village || data.address.county || '';
+        document.getElementById('state').value = data.address.state || '';
+        document.getElementById('zip').value = data.address.postcode || '';
+        if (data.address.road && !document.getElementById('address').value) {
+          document.getElementById('address').value = data.address.road;
+        }
+      }
+    } catch(err) { console.error('Geocoding failed', err); }
+
+    locBtn.textContent = 'Location Found! (You can edit below)';
+    setTimeout(() => { locBtn.textContent = 'Use My Current Location'; }, 3000);
+
+    const dist = calculateDistance(STORE_LOCATION.lat, STORE_LOCATION.lng, lat, lon);
+    latestDeliveryInfo = calculateDeliverySchedule(dist);
+    latestDeliverySource = 'browser';
+    
+    document.getElementById('distance').textContent = latestDeliveryInfo.distance + ' km';
+    document.getElementById('delivery-date').textContent = latestDeliveryInfo.message;
+    const btn = document.getElementById('placeOrderBtn');
+    btn.disabled = !latestDeliveryInfo.available;
+    btn.classList.toggle('opacity-60', !latestDeliveryInfo.available);
+  }, () => { 
+    locBtn.textContent = 'Use My Current Location';
+    document.getElementById('delivery-date').textContent = 'Location denied. Please enter city manually.'; 
+  });
+});
+
+// City input
+document.getElementById('city').addEventListener('input', updateDeliveryInfo);
+
+// Mobile menu + init
+setupMobileMenu();
+document.addEventListener('DOMContentLoaded', () => { 
+  renderCart(); 
+  updateDeliveryInfo(); 
+  
+  // UI Enforcement for Mobile Checkout
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile) {
+    document.getElementById('placeOrderBtn')?.classList.remove('hidden');
+  } else {
+    document.getElementById('desktopWarningBox')?.classList.remove('hidden');
+  }
+
+  // CRITICAL: Check if we just came back from a successful payment
+  const checkPaymentReturn = async () => {
+    const payStatus = JSON.parse(localStorage.getItem('pay_done') || '{}');
+    const pending = JSON.parse(localStorage.getItem('pending_order_data') || '{}');
+
+    if (payStatus.ok && pending.deliveryAddress && (Date.now() - (payStatus.time || 0) < 600000)) {
+        console.log('Finalizing recovered order...');
+        localStorage.removeItem('pay_done');
+        localStorage.removeItem('pending_order_data');
+
+        const btn = document.getElementById('placeOrderBtn');
+        if(btn) { btn.disabled = true; btn.textContent = 'Finalizing Order...'; }
+
+        try {
+          const info = pending.latestDeliveryInfo || {};
+          info.payment_proof = payStatus.proof;
+          info.payment_details = { 
+            upi_note_used: payStatus.tn,
+            assumed_name: pending.customerName,
+            customer_id: pending.customerId
+          };
+
+          const order = await placeOrder(pending.deliveryAddress, info, 'upi');
+          await clearCart();
+          // REDIRECT TO DASHBOARD (index.html) WITH SUCCESS PARAM
+          window.location.href = 'index.html?order_success=true&oid=' + order.id;
+        } catch (err) {
+          console.error('Finalization error:', err);
+          showToast('Failed to place order: ' + err.message, 'error');
+          const btn = document.getElementById('placeOrderBtn');
+          if(btn) { btn.disabled = false; btn.textContent = 'Place Order'; }
+        }
+    }
+  };
+  checkPaymentReturn();
+});
+</script>
+</body></html>

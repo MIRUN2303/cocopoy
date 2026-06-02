@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cocopoy | Order Status</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:"class",theme:{extend:{colors:{primary:"#0B113D",secondary:"#F47C20",accent:"#F9FAFB","surface-dark":"#1A1A3D","border-dark":"#2C2F54","text-muted-dark":"#A0A4B8"},fontFamily:{display:["Work Sans","sans-serif"]}}}}</script>
+<style>
+body{font-family:'Work Sans',sans-serif}
+.status-step{display:flex;align-items:center;gap:12px;padding:12px 0;position:relative}
+.status-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;border:2px solid #2C2F54;background:#0B113D;color:#A0A4B8;transition:all 0.3s}
+.status-dot.active{border-color:#F47C20;background:#F47C20;color:#fff}
+.status-dot.completed{border-color:#22c55e;background:#22c55e;color:#fff}
+.status-line{position:absolute;left:15px;top:44px;width:2px;height:calc(100% - 20px);background:#2C2F54}
+.status-step:last-child .status-line{display:none}
+.status-line.active{background:#F47C20}
+.status-line.completed{background:#22c55e}
+</style>
+</head>
+<body class="min-h-screen bg-[#0B113D] text-white">
+
+<header class="sticky top-0 z-20 bg-[#1A1A3D] border-b border-[#2C2F54]">
+  <div class="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8">
+    <a href="index.html"><img src="image/logo/fltlogo.png" alt="Cocopoy" class="h-10 w-auto sm:h-12"/></a>
+    <nav class="flex items-center gap-6">
+      <a class="text-sm text-[#A0A4B8] hover:text-[#F47C20] transition" href="index.html">Shop</a>
+      <a class="text-sm text-[#A0A4B8] hover:text-[#F47C20] transition" href="cocoorders.html">My Orders</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 py-8 lg:px-8 max-w-2xl">
+  <div id="loading" class="text-center py-12 text-[#A0A4B8]">Loading order details...</div>
+  <div id="orderContent" class="hidden">
+    <div class="mb-6">
+      <p class="text-sm text-[#A0A4B8]">Order</p>
+      <h1 id="orderId" class="text-2xl font-bold text-[#F47C20]"></h1>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="rounded-lg border border-[#2C2F54] bg-[#1A1A3D] p-5 mb-6">
+      <div class="flex justify-between mb-3"><span class="text-[#A0A4B8]">Total</span><span class="text-xl font-bold text-[#F47C20]" id="orderTotal"></span></div>
+      <div class="flex justify-between mb-3"><span class="text-[#A0A4B8]">Placed</span><span id="orderDate"></span></div>
+      <div class="flex justify-between"><span class="text-[#A0A4B8]">Delivery</span><span id="orderDelivery"></span></div>
+    </div>
+
+    <!-- Status Timeline -->
+    <div class="rounded-lg border border-[#2C2F54] bg-[#1A1A3D] p-5 mb-6">
+      <h3 class="font-bold mb-4">Order Status</h3>
+      <div id="statusTimeline"></div>
+    </div>
+
+    <!-- Items -->
+    <div class="rounded-lg border border-[#2C2F54] bg-[#1A1A3D] p-5 mb-6">
+      <h3 class="font-bold mb-4">Items</h3>
+      <div id="orderItems" class="space-y-3"></div>
+    </div>
+
+    <div class="flex gap-3">
+      <a href="cocoorders.html" class="flex-1 text-center rounded-lg bg-[#F47C20] px-4 py-3 font-bold text-black hover:bg-white transition">All Orders</a>
+      <a href="index.html#products" class="flex-1 text-center rounded-lg border border-[#2C2F54] px-4 py-3 font-bold text-[#A0A4B8] hover:text-[#F47C20] hover:border-[#F47C20] transition">Shop More</a>
+    </div>
+  </div>
+</main>
+
+<!-- Refund Popup -->
+<div id="refundPopup" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+  <div class="bg-[#1A1A3D] rounded-xl max-w-sm w-full p-6 border border-[#2C2F54]">
+    <h3 class="font-bold text-lg text-white mb-2">Cancel & Request Refund</h3>
+    <p class="text-sm text-[#A0A4B8] mb-4">Please provide your UPI details so we can process your refund quickly.</p>
+    
+    <label class="block text-sm text-[#A0A4B8] mb-1">Reason for cancellation (optional)</label>
+    <input type="text" id="refundReason" class="w-full bg-[#0B113D] border border-[#2C2F54] rounded-lg p-2 mb-3 text-white">
+
+    <label class="block text-sm text-[#A0A4B8] mb-1">Your exact UPI ID *</label>
+    <input type="text" id="refundUpi" class="w-full bg-[#0B113D] border border-[#2C2F54] rounded-lg p-2 mb-3 text-white" placeholder="e.g. 9876543210@ybl">
+
+    <label class="block text-sm text-[#A0A4B8] mb-1">Name registered to this UPI *</label>
+    <input type="text" id="refundName" class="w-full bg-[#0B113D] border border-[#2C2F54] rounded-lg p-2 mb-5 text-white" placeholder="e.g. John Doe">
+
+    <button id="submitRefundBtn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg mb-2">Submit Cancellation</button>
+    <button id="closeRefundBtn" class="w-full bg-transparent border border-[#2C2F54] text-[#A0A4B8] font-bold py-2 rounded-lg hover:bg-[#2C2F54]">Go Back</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js?v=1.4"></script>
+<script src="js/auth.js?v=1.4"></script>
+<script src="js/cart.js?v=1.4"></script>
+<script src="js/orders.js?v=1.4"></script>
+<script src="js/utils.js?v=1.4"></script>
+
+<script>
+const allStatuses = ['placed','confirmed','shipped','delivered'];
+
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('id');
+  const loading = document.getElementById('loading');
+  const content = document.getElementById('orderContent');
+
+  let order;
+  if (orderId) {
+    order = await getOrderById(orderId);
+  } else {
+    order = await getLatestOrder();
+  }
+
+  if (!order) {
+    loading.innerHTML = 'No order found. <a href="index.html#products" class="text-[#F47C20] underline">Start shopping!</a>';
+    return;
+  }
+
+  loading.classList.add('hidden');
+  content.classList.remove('hidden');
+
+  document.getElementById('orderId').textContent = order.id;
+  document.getElementById('orderTotal').textContent = '₹' + order.total;
+  document.getElementById('orderDate').textContent = formatDate(order.created_at);
+  document.getElementById('orderDelivery').textContent = order.delivery_info?.message || '--';
+
+  // Status timeline
+  const timeline = document.getElementById('statusTimeline');
+  if (['cancelled', 'cancel_requested', 'refund_processing', 'cancel_denied', 'cancel_pending'].includes(order.status)) {
+    const cfg = getStatusConfig(order.status);
+    timeline.innerHTML = `
+      <div class="text-center p-6 border rounded-xl ${order.status === 'cancelled' ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'}">
+        <div class="text-4xl mb-3">${cfg.icon}</div>
+        <div class="font-bold text-lg mb-1 ${order.status === 'cancelled' ? 'text-green-500' : 'text-red-500'}">${cfg.label}</div>
+        <p class="text-sm text-[#A0A4B8] mb-4">
+          ${order.status === 'cancelled' ? 'Your refund has been fully processed.' : 'We are processing your cancellation request.'}
+        </p>
+        
+        ${order.delivery_info?.refund_proof ? `
+          <div class="p-4 bg-[#0B113D] rounded-lg border border-green-500/20">
+            <p class="text-xs text-green-400 font-bold mb-2 uppercase tracking-widest">Official Refund Proof</p>
+            <button onclick="viewRefundProof('${order.delivery_info.refund_proof}')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition shadow-lg">
+              📸 View Refund Receipt
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  } else {
+    const currentIdx = allStatuses.indexOf(order.status);
+    allStatuses.forEach((status, i) => {
+      const cfg = getStatusConfig(status);
+      const isCompleted = i < currentIdx;
+      const isActive = i === currentIdx;
+      const step = document.createElement('div');
+      step.className = 'status-step';
+      step.innerHTML = `
+        <div class="status-dot ${isCompleted?'completed':''} ${isActive?'active':''}">${isCompleted?'✓':cfg.icon}</div>
+        <div>
+          <p class="font-semibold ${isActive?'text-[#F47C20]':isCompleted?'text-green-400':'text-[#A0A4B8]'}">${cfg.label}</p>
+        </div>
+        <div class="status-line ${isCompleted?'completed':''} ${isActive?'active':''}"></div>`;
+      timeline.appendChild(step);
+    });
+  }
+
+  // Cancellation logic
+  const hoursSince = (new Date() - new Date(order.created_at)) / (1000 * 60 * 60);
+  if (hoursSince <= 5 && ['placed', 'confirmed'].includes(order.status)) {
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'w-full mt-4 py-3 rounded-lg border border-red-500/30 text-red-500 font-bold hover:bg-red-500/10 transition';
+    cancelBtn.textContent = 'Cancel Order';
+    cancelBtn.onclick = () => {
+      document.getElementById('refundPopup').classList.remove('hidden');
+    };
+    document.getElementById('statusTimeline').parentElement.appendChild(cancelBtn);
+  }
+
+  // Refund popup listeners
+  document.getElementById('closeRefundBtn')?.addEventListener('click', () => {
+    document.getElementById('refundPopup').classList.add('hidden');
+  });
+
+  document.getElementById('submitRefundBtn')?.addEventListener('click', async () => {
+    const reason = document.getElementById('refundReason').value.trim();
+    const upi = document.getElementById('refundUpi').value.trim();
+    const name = document.getElementById('refundName').value.trim();
+
+    if (!upi || !name) {
+      alert('Please provide your exact UPI ID and Name so we can refund you.');
+      return;
+    }
+
+    try {
+      document.getElementById('submitRefundBtn').textContent = 'Processing...';
+      await cancelOrderWithRefund(order.id, { reason, upi, name });
+      window.location.reload();
+    } catch(err) {
+      alert(err.message);
+      document.getElementById('submitRefundBtn').textContent = 'Submit Cancellation';
+    }
+  });
+
+  // Order items
+  const itemsDiv = document.getElementById('orderItems');
+  (order.order_items || []).forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'flex items-center gap-3';
+    el.innerHTML = `
+      <div class="w-12 h-12 rounded bg-cover bg-center flex-shrink-0" style="background-image:url('${item.product_image}')"></div>
+      <div class="flex-grow"><p class="font-semibold text-sm">${item.product_name}</p><p class="text-xs text-[#A0A4B8]">₹${item.price} × ${item.quantity}</p></div>
+      <p class="font-bold text-[#F47C20]">₹${item.price * item.quantity}</p>`;
+    itemsDiv.appendChild(el);
+  });
+})();
+function viewRefundProof(screenshot) {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm';
+  modal.innerHTML = `
+    <div class="relative bg-[#1A1A3D] p-2 rounded-2xl border border-white/10 max-w-lg w-full">
+      <button class="absolute -top-4 -right-4 w-10 h-10 bg-[#F47C20] text-white rounded-full font-bold shadow-xl flex items-center justify-center hover:scale-110 transition-transform" onclick="this.parentElement.parentElement.remove()">✕</button>
+      <h4 class="text-center text-white font-bold mb-2 pt-2">Official Refund Receipt</h4>
+      <img src="${screenshot}" class="w-full h-auto max-h-[70vh] object-contain rounded-xl" />
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+</script>
+</body></html>

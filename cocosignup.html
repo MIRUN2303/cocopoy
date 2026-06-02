@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cocopoy - Sign Up</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: { extend: { colors: { "primary":"#0B113D","secondary":"#F47C20","background-light":"#FFFFFF","background-dark":"#0B113D","surface-light":"#F9FAFB","surface-dark":"#1A1A3D","text-light":"#0B113D","text-dark":"#FFFFFF","text-muted-light":"#60656F","text-muted-dark":"#A0A4B8","border-light":"#E5E7EB","border-dark":"#2C2F54" }, fontFamily: { "display": ["Manrope","sans-serif"] } } } }
+</script>
+<style>
+body { font-family: 'Manrope', sans-serif; }
+.google-btn { display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border:1px solid #E5E7EB;border-radius:8px;font-weight:600;font-size:14px;background:#fff;color:#333;cursor:pointer;transition:all 0.2s; }
+.google-btn:hover { background:#f8f8f8;box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+.divider { display:flex;align-items:center;gap:12px;margin:20px 0; }
+.divider::before,.divider::after { content:'';flex:1;height:1px;background:#E5E7EB; }
+.divider span { font-size:13px;color:#60656F;font-weight:500; }
+.spinner { display:none;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top:3px solid #fff;border-radius:50%;animation:spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 767px) { h1,h2 { font-size:1.75rem !important; } .form-input { padding:0.75rem !important; } }
+</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+
+<header class="sticky top-0 z-20 w-full bg-background-light/80 backdrop-blur-sm border-b border-border-light">
+  <div class="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8">
+    <a href="index.html"><img src="image/logo/fltlogo.png" alt="Cocopoy Logo" class="h-10 w-auto sm:h-12 lg:h-14"/></a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-sm font-medium text-text-muted-light hover:text-text-light transition-colors" href="index.html">Dashboard</a>
+      <a class="text-sm font-medium text-text-muted-light hover:text-text-light transition-colors" href="cococontact.html">Contact</a>
+    </nav>
+    <button id="mobileMenuBtn" class="md:hidden text-2xl text-primary focus:outline-none">☰</button>
+  </div>
+  <nav id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-background-light flex flex-col border-t border-primary/20 z-50">
+    <a class="block px-6 py-3 text-sm" href="index.html">Dashboard</a>
+    <a class="block px-6 py-3 text-sm" href="cococontact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="flex flex-col lg:flex-row min-h-screen">
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
+    <div class="w-full max-w-md">
+      <div class="mb-8 text-center">
+        <div class="flex justify-center items-center mb-4">
+          <div class="bg-primary rounded-full shadow flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32">
+            <img src="image/logo/wholelogo.png" alt="Cocopoy Logo" class="object-contain w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28"/>
+          </div>
+        </div>
+        <h2 class="text-3xl lg:text-4xl font-bold mb-2">Sign Up</h2>
+        <p class="text-text-muted-light">Create your account to start shopping.</p>
+      </div>
+
+      <button id="googleSignUpBtn" class="google-btn" type="button">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Sign up with Google
+      </button>
+
+      <div class="divider"><span>or create with email</span></div>
+
+      <form id="signupForm" class="space-y-5">
+        <div id="signupError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+        <div id="signupSuccess" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"></div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold mb-2">Email</label>
+            <input type="email" id="email" class="w-full bg-primary/5 border border-primary/10 rounded-xl p-3 outline-none focus:ring-2 focus:ring-secondary/50 transition-all" placeholder="your@email.com" required>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">Password</label>
+            <input type="password" id="password" class="w-full bg-primary/5 border border-primary/10 rounded-xl p-3 outline-none focus:ring-2 focus:ring-secondary/50 transition-all" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-primary/90 flex items-center justify-center gap-2" type="submit" id="signupBtn">
+          <span>Sign Up</span>
+          <div class="spinner" id="signupSpinner"></div>
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-text-muted-light">
+        Already have an account? <a class="font-medium text-primary hover:underline" href="cocologin.html">Log In</a>
+      </p>
+    </div>
+  </div>
+  <div class="hidden lg:block w-1/2 relative">
+    <img alt="Cocopoy snacks" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxgrJ8JyxUAR04DtD6kmH36MxGDvg8CTDxoqNKgYpoXyJp-qC1Okchst3b6G2-sMP6DQEy1z1PW2CY8qfZWEXNgC-ppAXbRIXiq17S7XtLxh5hJrxEkQH-wlhkiHzMDwqTGWr6pO6usU9YLKTWjAVbLfEoNdl7_R708Y1TUu7VmHc2CxMGbEjQQL-LQJs3KTGheOKQB8tSXmY40-Q0re--85utdzEu7xZQ3abo9aSIS_SKg__4_ml0Mpz_jGJ7SZSx83fSRwWJPCk"/>
+    <div class="absolute inset-0 bg-gradient-to-t from-background-dark/50 to-transparent"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+
+<script>
+(async () => { const user = await getCurrentUser(); if (user) window.location.href = 'index.html'; })();
+
+document.getElementById('googleSignUpBtn').addEventListener('click', async () => {
+  try { await signInWithGoogle(); } catch(err) { showToast('Google sign-up failed: '+err.message,'error'); }
+});
+
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('signupBtn');
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('signupError');
+    const successDiv = document.getElementById('signupSuccess');
+
+    btn.disabled = true;
+    btn.innerHTML = 'Creating account...';
+    errorDiv.classList.add('hidden');
+    successDiv.classList.add('hidden');
+
+    try {
+      await signUpWithEmail(email, password);
+      successDiv.textContent = 'Account created! Please check your email for verification link.';
+      successDiv.classList.remove('hidden');
+      setTimeout(() => window.location.href = 'cocologin.html', 3000);
+    } catch (err) {
+      errorDiv.textContent = err.message;
+      errorDiv.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Sign Up';
+    }
+  });
+
+setupMobileMenu();
+</script>
+</body>
+</html>

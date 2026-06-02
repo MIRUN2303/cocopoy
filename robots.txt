@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /cocoprofile.html
+Disallow: /cocoorders.html
+
+Sitemap: https://cocopoy.com/sitemap.xml

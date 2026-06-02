@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cocopoy - User Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>tailwind.config={darkMode:"class",theme:{extend:{colors:{primary:"#0B113D",secondary:"#F47C20","background-light":"#FFFFFF","background-dark":"#0B113D","text-light":"#0B113D","text-dark":"#FFFFFF","border-dark":"#2C2F54","text-muted-dark":"#A0A4B8"},fontFamily:{display:["Manrope","sans-serif"]}}}}</script>
+<style>
+body{font-family:'Manrope',sans-serif}
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:50;visibility:hidden;opacity:0;transition:opacity 0.2s}
+.popup-overlay.active{visibility:visible;opacity:1}
+.popup{padding:1.5rem;border-radius:0.75rem;max-width:400px;width:90%;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+@media(max-width:767px){main,section{padding-top:1.5rem!important;padding-bottom:2rem!important}.container{padding-left:1rem;padding-right:1rem}}
+</style>
+<!-- EmailJS SDK (Optional: For real email verification) -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="flex flex-col min-h-screen">
+
+<header class="sticky top-0 z-[100] bg-background-dark/90 backdrop-blur-sm border-b border-primary/20 dark:border-primary/30 shadow-sm">
+  <div class="container mx-auto flex items-center justify-between px-6 py-4">
+    <a href="index.html"><img src="image/logo/fltlogo.png" alt="Cocopoy" class="h-10 w-auto sm:h-12"/></a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-sm font-medium opacity-80 hover:opacity-100 transition" href="index.html">Dashboard</a>
+      <a class="text-sm font-medium opacity-80 hover:opacity-100 transition" href="cococart.html">Cart</a>
+      <a class="text-sm font-medium opacity-80 hover:opacity-100 transition" href="cocoorders.html">Orders</a>
+      <a class="text-base font-bold text-secondary underline" href="cocoprofile.html">Profile</a>
+    </nav>
+    <button id="mobileMenuBtn" class="md:hidden text-2xl">☰</button>
+  </div>
+  
+  <nav id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-background-dark flex flex-col border-t border-primary/20 shadow-2xl">
+    <a class="block px-6 py-3 text-sm" href="index.html">Dashboard</a>
+    <a class="block px-6 py-3 text-sm" href="cococart.html">Cart</a>
+    <a class="block px-6 py-3 text-sm" href="cocoorders.html">Orders</a>
+    <a class="block px-6 py-3 text-sm font-bold text-secondary" href="cocoprofile.html">Profile</a>
+  </nav>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12">
+  <div id="profileLoading" class="text-center py-12 text-text-muted-dark">Loading profile...</div>
+  <div id="profileContent" class="max-w-4xl mx-auto space-y-12 hidden">
+
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-12 text-center sm:text-left bg-background-dark/30 p-6 rounded-2xl border border-primary/10">
+      <div class="relative group flex-shrink-0">
+        <img id="profileImage" src="image/proimg.jpg" alt="User" class="h-28 w-28 sm:h-32 sm:w-32 rounded-full border-4 border-secondary object-cover transition-opacity group-hover:opacity-80 aspect-square"/>
+        <label for="avatarUpload" class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </label>
+        <input type="file" id="avatarUpload" class="hidden" accept="image/*"/>
+      </div>
+      <div class="flex flex-col items-center sm:items-start">
+        <h2 id="displayName" class="text-3xl sm:text-4xl font-bold break-all"></h2>
+        <p id="displayEmail" class="text-text-muted-dark text-sm sm:text-base"></p>
+        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
+          <p id="displayRole" class="text-xs text-white font-bold bg-primary/40 px-2 py-0.5 rounded opacity-90"></p>
+          <div class="flex items-center gap-2 bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
+            <p id="displayCustomerId" class="text-[10px] font-bold text-secondary uppercase tracking-widest"></p>
+            <button id="copyIdBtn" class="text-[10px] font-extrabold text-secondary hover:text-primary transition-colors underline decoration-dotted">COPY</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <h3 class="text-2xl font-bold mb-6 border-b border-primary/20 pb-3">Personal Information</h3>
+      <div class="space-y-6 max-w-lg">
+        <div><label class="block text-sm font-medium opacity-80 mb-2">My Customer ID (Reference Only)</label>
+          <input type="text" id="customerIdInput" class="form-input w-full rounded-lg border border-border-dark bg-background-dark/40 text-text-muted-dark p-3 cursor-not-allowed" readonly/></div>
+        <div><label class="block text-sm font-medium opacity-80 mb-2">Account Full Name (From Auth)</label>
+          <input type="text" id="authFullName" class="form-input w-full rounded-lg border border-border-dark bg-background-dark/40 text-text-muted-dark p-3 cursor-not-allowed" readonly/></div>
+        <div><label class="block text-sm font-medium opacity-80 mb-2">Billing Full Name</label>
+          <input type="text" id="billingFullName" class="form-input w-full rounded-lg border border-secondary bg-background-dark text-white p-3" placeholder="Enter Full Name"/>
+          <p class="text-[10px] text-secondary font-bold mt-1 uppercase tracking-tighter">Note: Name changes require password confirmation below.</p>
+        </div>
+        <div><label class="block text-sm font-medium opacity-80 mb-2">Email</label>
+          <input type="email" id="email" class="form-input w-full rounded-lg border border-border-dark bg-background-dark/40 text-text-muted-dark p-3 cursor-not-allowed" readonly/></div>
+        <div><label class="block text-sm font-medium opacity-80 mb-2">Phone</label>
+          <input type="text" id="phone" class="form-input w-full rounded-lg border border-secondary bg-background-dark text-white p-3" placeholder="+91 ..."/></div>
+        
+        <div id="reauthSection" class="pt-4 border-t border-primary/20">
+          <label class="block text-sm font-bold text-secondary mb-2">Confirm Password to Save Changes</label>
+          <input type="password" id="confirmPass" class="form-input w-full rounded-lg border border-secondary bg-background-dark text-white p-3 mb-4" placeholder="••••••••"/>
+          <button id="updateProfileBtn" class="w-full rounded-lg h-12 bg-secondary text-white text-sm font-extrabold hover:bg-secondary/90 shadow-lg transition transform active:scale-95">Verify & Update Profile</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="text-2xl font-bold mb-6 border-b border-primary/20 pb-3">Email Preferences</h3>
+      <div class="flex items-center justify-between p-5 bg-background-dark/40 border border-border-dark rounded-lg max-w-lg">
+        <div>
+          <p class="font-bold text-white">Newsletter</p>
+          <p class="text-xs text-text-muted-dark mt-1" id="subStatusText">Loading status...</p>
+        </div>
+        <button id="toggleSubBtn" class="px-5 py-2 rounded-lg text-sm font-bold border border-secondary text-secondary hover:bg-secondary hover:text-white transition">...</button>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="text-2xl font-bold mb-6 border-b border-primary/20 pb-3">Quick Links</h3>
+      <div class="flex flex-wrap gap-3">
+        <a href="cocoorders.html" class="rounded-lg h-11 px-6 bg-white text-blue-600 border border-blue-600 text-sm font-bold hover:bg-blue-50 transition flex items-center">Check Your Orders</a>
+        <button id="logoutProfileBtn" class="rounded-lg h-11 px-6 bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition">Sign Out</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-background-dark border-t border-primary/20">
+  <div class="container mx-auto px-6 py-8 flex flex-col items-center gap-4">
+    <img src="image/logo/textlogo.png" alt="Cocopoy" class="h-6 w-auto sm:h-4"/>
+    <p class="text-sm text-text-muted-dark">© 2025 Cocopoy. All rights reserved.</p>
+  </div>
+</footer>
+</div>
+
+<!-- Verification Popup Modal -->
+<div id="verifyModal" class="popup-overlay bg-primary/90 backdrop-blur-md">
+  <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center relative shadow-2xl scale-95 transition-transform duration-300" id="verifyModalContent">
+    <div class="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg class="w-10 h-10 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+    </div>
+    <h3 class="text-2xl font-black text-primary mb-2">Email Verification</h3>
+    <p class="text-gray-500 text-sm mb-6 font-medium">A security code has been sent to your registered email address. Please enter it below to confirm your name change.</p>
+    
+    <div class="bg-secondary/5 rounded-2xl p-4 mb-6 border border-secondary/10">
+      <span class="text-[10px] font-black text-secondary uppercase tracking-widest block mb-1">Verify Your Email</span>
+      <span id="targetEmailDisplay" class="text-xs font-bold text-primary opacity-60">user@example.com</span>
+    </div>
+
+    <input type="text" id="verificationInput" maxlength="6" class="w-full h-14 bg-gray-100 border-2 border-transparent focus:border-secondary rounded-2xl text-center text-2xl font-black tracking-[0.5em] outline-none transition-all mb-4" placeholder="••••••">
+    
+    <button onclick="resendCode()" class="text-[10px] font-black text-secondary uppercase tracking-widest hover:underline mb-6">Didn't receive it? Resend Code</button>
+
+    <div class="flex gap-3">
+      <button onclick="closeVerifyModal()" class="flex-1 py-4 text-gray-400 font-bold text-sm uppercase tracking-widest hover:text-primary transition-colors">Cancel</button>
+      <button id="confirmUpdateBtn" class="flex-[2] py-4 bg-secondary text-white font-black rounded-2xl shadow-xl shadow-secondary/20 hover:scale-105 transition-all uppercase tracking-widest text-sm">Verify & Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+
+<script>
+setupMobileMenu();
+
+// --- EmailJS Configuration ---
+const EMAILJS_PUBLIC_KEY = "HSE98_x-YtxbOEpuz";
+const EMAILJS_SERVICE_ID = "service_rgbpzfq";
+const EMAILJS_TEMPLATE_ID = "template_usm6bm8";
+
+if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+}
+
+(async () => {
+  const user = await getCurrentUser();
+  const loading = document.getElementById('profileLoading');
+  const content = document.getElementById('profileContent');
+
+  if (!user) {
+    loading.innerHTML = 'Please <a href="cocologin.html" class="text-secondary font-bold underline">login</a> to view profile.';
+    return;
+  }
+
+  const profile = await getUserProfile();
+  loading.classList.add('hidden');
+  content.classList.remove('hidden');
+
+  // Display info
+  const displayName = profile?.full_name || user.user_metadata?.full_name || user.email.split('@')[0];
+  document.getElementById('displayName').textContent = displayName;
+  document.getElementById('displayEmail').textContent = user.email;
+  document.getElementById('displayRole').textContent = profile?.role === 'admin' ? '⚙ Admin / Founder' : '🛒 Customer';
+
+  const customerId = user.id.substring(0, 8).toUpperCase();
+  document.getElementById('displayCustomerId').textContent = 'ID: ' + customerId;
+
+  document.getElementById('copyIdBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(customerId);
+    showToast('Customer ID copied!', 'info');
+  });
+
+  // Form fields
+  document.getElementById('customerIdInput').value = customerId;
+  const initialName = profile?.full_name || googleName || '';
+  document.getElementById('authFullName').value = initialName;
+  document.getElementById('billingFullName').value = initialName;
+  document.getElementById('email').value = user.email;
+  document.getElementById('phone').value = profile?.phone || '';
+
+  // Avatar from Google or default
+  if (profile?.avatar_url) document.getElementById('profileImage').src = profile.avatar_url;
+  else if (user.user_metadata?.avatar_url) document.getElementById('profileImage').src = user.user_metadata.avatar_url;
+
+  // Update profile with code verification
+  document.getElementById('updateProfileBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('updateProfileBtn');
+    const newName = document.getElementById('billingFullName').value.trim();
+    const newPhone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('confirmPass').value;
+
+    if (!password) {
+      showToast('Please enter your password first.', 'warning');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Verifying Password...';
+
+    try {
+      // 1. Verify password first
+      await signInWithEmail(user.email, password);
+      
+      // 2. Prepare Verification
+      const securityCode = Math.floor(100000 + Math.random() * 900000);
+      const targetEmail = profile?.email || user.email;
+      document.getElementById('targetEmailDisplay').textContent = targetEmail;
+      
+      // Simulate sending email (REPLACE THIS WITH REAL API CALL IN PRODUCTION)
+      console.log('--- EMAIL SIMULATION ---');
+      console.log(`To: ${targetEmail}`);
+      console.log(`Subject: Your Cocopoy Verification Code`);
+      console.log(`Body: Your code is ${securityCode}`);
+      console.log('------------------------');
+      
+      showToast('Verification code sent to ' + targetEmail, 'info');
+      
+      // Attempt real send if configured
+      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          email: targetEmail,
+          passcode: securityCode,
+          time: new Date().toLocaleTimeString()
+        }).then(() => {
+          showToast('Real email sent! Check your inbox.', 'success');
+        }).catch(err => {
+          console.error('EmailJS Error:', err);
+          const msg = err.text || err.message || 'Check your Gmail permissions in EmailJS';
+          showToast('Email Error: ' + msg, 'error');
+        });
+      }
+
+      openVerifyModal();
+
+      // Store the pending data
+      window.pendingUpdate = { newName, newPhone, securityCode };
+    } catch(err) { 
+      showToast('Error: ' + (err.message.includes('Invalid login') ? 'Incorrect password!' : err.message), 'error'); 
+      btn.disabled = false;
+      btn.textContent = 'Verify & Update Profile';
+    }
+  });
+
+  // Handle Verification Confirmation
+  document.getElementById('confirmUpdateBtn').addEventListener('click', async () => {
+    const userInput = document.getElementById('verificationInput').value;
+    const { newName, newPhone, securityCode } = window.pendingUpdate || {};
+    const btn = document.getElementById('confirmUpdateBtn');
+
+    if (userInput != securityCode) {
+      showToast('Invalid verification code!', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Updating...';
+
+    try {
+      // Update the profile (Name history is handled automatically in auth.js)
+      await updateProfile({
+        full_name: newName,
+        phone: newPhone
+      });
+
+      await updateHeaderAuth(); 
+      showToast('Profile updated and name archived! ✅', 'success');
+      
+      // Update all local name displays
+      document.getElementById('displayName').textContent = newName;
+      document.getElementById('authFullName').value = newName;
+      document.getElementById('billingFullName').value = newName;
+      
+      document.getElementById('confirmPass').value = '';
+      document.getElementById('verificationInput').value = '';
+      closeVerifyModal();
+      
+      const updateBtn = document.getElementById('updateProfileBtn');
+      updateBtn.disabled = false;
+      updateBtn.textContent = 'Verify & Update Profile';
+    } catch (err) {
+      showToast('Update failed: ' + err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Verify & Save';
+    }
+  });
+
+  function openVerifyModal() {
+    const modal = document.getElementById('verifyModal');
+    const content = document.getElementById('verifyModalContent');
+    modal.classList.add('active');
+    setTimeout(() => content.classList.remove('scale-95'), 10);
+  }
+
+  function closeVerifyModal() {
+    const modal = document.getElementById('verifyModal');
+    const content = document.getElementById('verifyModalContent');
+    content.classList.add('scale-95');
+    setTimeout(() => modal.classList.remove('active'), 300);
+    
+    // Reset original button if cancelled
+    const updateBtn = document.getElementById('updateProfileBtn');
+    updateBtn.disabled = false;
+    updateBtn.textContent = 'Verify & Update Profile';
+  }
+  window.closeVerifyModal = closeVerifyModal;
+
+  function resendCode() {
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const targetEmail = document.getElementById('targetEmailDisplay').textContent;
+    if (window.pendingUpdate) window.pendingUpdate.securityCode = code;
+    
+    showToast('New code sent to ' + targetEmail, 'info');
+    console.log('NEW CODE SENT TO ' + targetEmail + ':', code);
+
+    // Attempt real send for resend
+    if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        email: targetEmail,
+        passcode: code,
+        time: new Date().toLocaleTimeString()
+      }).catch(err => {
+        console.error('EmailJS Resend Error:', err);
+        showToast('Resend Error: ' + (err.text || 'Check configuration'), 'error');
+      });
+    }
+  }
+  window.resendCode = resendCode;
+
+  // Avatar upload and compression
+  document.getElementById('avatarUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Show quick feedback
+    showToast('Uploading image...', 'info');
+    
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = async function() {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 256;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // Compress heavily to keep database light
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        document.getElementById('profileImage').src = dataUrl;
+        
+        try {
+          await updateProfile({ avatar_url: dataUrl });
+          showToast('Profile image updated! 📸', 'success');
+        } catch (err) {
+          showToast('Failed to save image', 'error');
+        }
+      }
+      img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+  });
+
+  // Logout
+  document.getElementById('logoutProfileBtn').addEventListener('click', () => signOut());
+
+  // Subscription Logic
+  const subBtn = document.getElementById('toggleSubBtn');
+  const subText = document.getElementById('subStatusText');
+  
+  async function checkSubscription() {
+    try {
+      const { data } = await db.from('subscribers').select('email').eq('email', user.email).single();
+      if (data) {
+        subText.textContent = '✅ You are subscribed to exclusive offers.';
+        subBtn.textContent = 'Unsubscribe';
+        subBtn.className = 'px-5 py-2 rounded-lg text-sm font-bold border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition';
+        return true;
+      }
+    } catch (e) {} // Not found or error
+    
+    subText.textContent = '❌ You are not subscribed.';
+    subBtn.textContent = 'Subscribe Now';
+    subBtn.className = 'px-5 py-2 rounded-lg text-sm font-bold border border-secondary text-secondary hover:bg-secondary hover:text-white transition';
+    return false;
+  }
+
+  let isSubbed = await checkSubscription();
+
+  subBtn.addEventListener('click', async () => {
+    subBtn.textContent = 'Processing...';
+    try {
+      if (isSubbed) {
+        // Erase from database
+        await db.from('subscribers').delete().eq('email', user.email);
+        showToast('You have been unsubscribed.', 'info');
+      } else {
+        // Add to database
+        await db.from('subscribers').insert([{ email: user.email }]);
+        showToast('Successfully subscribed to offers! 🎊', 'success');
+      }
+      isSubbed = await checkSubscription();
+    } catch (err) {
+      showToast('Error: Please create the "subscribers" table in Supabase first!', 'error');
+      isSubbed = await checkSubscription();
+    }
+  });
+
+})();
+</script>
+</body></html>
