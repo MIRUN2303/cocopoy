@@ -238,14 +238,15 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 450px; }
 .instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
 
-/* Mobile: only arrows navigate reels, no manual scroll */
+/* Mobile: swipe-only reels, no manual scroll */
+#reelDots .reel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: background 0.3s; }
+#reelDots .reel-dot.active { background: rgba(255,255,255,0.85); }
 @media (max-width: 767px) {
   .reels-wrap { pointer-events: none; }
   #instagramReelsContainer { overflow-x: hidden; }
   #reelTrack { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
   #reelTrack > div { width: 100vw !important; }
   #reelTrack iframe { pointer-events: none !important; }
-  #reelPrev, #reelNext { width: 44px !important; height: 44px !important; background: rgba(255,255,255,0.2) !important; }
 }
 
 </style>
@@ -495,17 +496,12 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   </div>
 
   <div id="reelWrapper" class="relative" style="min-height:500px">
-    <button id="reelPrev" class="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-    </button>
     <div class="reels-wrap">
     <div id="instagramReelsContainer" class="flex overflow-x-auto gap-0 md:gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:center">
       <div id="reelTrack" class="flex gap-0 md:gap-4"></div>
     </div>
     </div>
-    <button id="reelNext" class="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
+    <div id="reelDots" class="flex justify-center gap-2 mt-4 md:hidden"></div>
   </div>
 
   <div class="text-center mt-6 mb-10">
@@ -809,9 +805,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCartDisplay();
   setupCartEventListeners();
 
-  // Load Instagram settings
-  await loadInstagramSettings();
-
   async function loadInstagramSettings() {
     const container = document.getElementById('instagramReelsContainer');
     if (!container) return;
@@ -868,18 +861,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const real = reelIds.filter(Boolean);
     track.innerHTML = real.map(cardHTML).join('');
 
-    // Mobile: clone first/last for seamless loop
-    const prevBtn = document.getElementById('reelPrev');
-    const nextBtn = document.getElementById('reelNext');
-    let isMobile = window.innerWidth < 768;
+    // Mobile: clone + swipe navigation
+    const isMobile = window.innerWidth < 768;
     let current = 1;
-
-    const goTo = (idx, smooth) => {
-      if (isMobile) {
-        track.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.16,1,0.3,1)' : 'none';
-        track.style.transform = `translateX(-${idx * 100}vw)`;
-      }
-    };
 
     if (isMobile && real.length > 1) {
       const first = track.children[0].outerHTML;
@@ -887,60 +871,70 @@ document.addEventListener('DOMContentLoaded', async () => {
       track.innerHTML = last + track.innerHTML + first;
       current = 1;
       goTo(current, false);
+    } else if (!isMobile) {
+      return; // Desktop: native scroll works fine
     }
 
-    const stopIframe = (idx) => {
-      const card = track.children[idx];
-      if (!card) return;
-      const f = card.querySelector('iframe');
-      if (f && f.src) f.src = '';
-    };
+    function goTo(idx, smooth) {
+      track.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.16,1,0.3,1)' : 'none';
+      track.style.transform = `translateX(-${idx * 100}vw)`;
+    }
 
-    function goNext(e) {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      if (!isMobile) return;
+    function goNext() {
       stopIframe(current);
       current++;
       goTo(current, true);
       if (current >= real.length + 1) { setTimeout(() => { current = 1; goTo(current, false); }, 380); }
     }
 
-    function goPrev(e) {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      if (!isMobile) return;
+    function goPrev() {
       stopIframe(current);
       current--;
       goTo(current, true);
       if (current <= 0) { setTimeout(() => { current = real.length; goTo(current, false); }, 380); }
     }
 
-    if (prevBtn && nextBtn) {
-      prevBtn.addEventListener('click', goPrev);
-      prevBtn.addEventListener('touchend', goPrev);
-      nextBtn.addEventListener('click', goNext);
-      nextBtn.addEventListener('touchend', goNext);
+    function stopIframe(idx) {
+      const card = track.children[idx];
+      if (!card) return;
+      const f = card.querySelector('iframe');
+      if (f && f.src) f.src = '';
     }
 
-    // Mobile swipe support
-    const reelWrap = document.getElementById('reelWrapper');
-    if (isMobile && reelWrap) {
-      let touchX = 0;
-      reelWrap.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].screenX; }, { passive: true });
-      reelWrap.addEventListener('touchend', (e) => {
-        const dx = e.changedTouches[0].screenX - touchX;
+    // Dots indicator
+    const dots = document.getElementById('reelDots');
+    if (dots) {
+      dots.innerHTML = real.map((_, i) => `<span class="reel-dot${i === 0 ? ' active' : ''}"></span>`).join('');
+      const updateDots = () => {
+        const idx = current - 1;
+        dots.querySelectorAll('.reel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      };
+      const origNext = goNext;
+      goNext = function() { origNext(); updateDots(); };
+      const origPrev = goPrev;
+      goPrev = function() { origPrev(); updateDots(); };
+    }
+
+    // Swipe
+    const wrap = document.getElementById('reelWrapper');
+    if (wrap) {
+      let sx = 0;
+      wrap.addEventListener('touchstart', e => { sx = e.changedTouches[0].screenX; }, { passive: true });
+      wrap.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].screenX - sx;
         if (Math.abs(dx) > 40) { dx < 0 ? goNext() : goPrev(); }
       }, { passive: true });
     }
 
-    // Stop all iframes when reels section scrolls out of view
-    const reelsSection = container.closest('.instagram-section') || container.parentElement;
-    const sectionObs = new IntersectionObserver(([entry]) => {
-        if (!entry.isIntersecting) {
-          track.querySelectorAll('iframe').forEach(f => { if (f.src) f.src = ''; });
-        }
-      }, { threshold: 0 });
-      sectionObs.observe(reelsSection);
+    // Stop iframes when out of view
+    const section = container.closest('.instagram-section') || container.parentElement;
+    new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) track.querySelectorAll('iframe').forEach(f => { if (f.src) f.src = ''; });
+    }, { threshold: 0 }).observe(section);
   }
+
+  // Load Instagram settings
+  await loadInstagramSettings();
 
   // Mobile accordion for story sections
   if (window.innerWidth < 1024) {
