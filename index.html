@@ -219,24 +219,45 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   50% { box-shadow: 0 0 30px 8px rgba(244,124,32,0.4); transform: scale(1.04); }
 }
 
-/* Scroll reveal animations */
+/* Scroll reveal — center overlap then slide apart */
+.reveal-section { overflow-x: hidden; }
 .reveal-item {
   opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
-.reveal-section[data-reveal="left"] .reveal-item {
-  transform: translateX(-50px) translateY(15px);
+/* On mobile, no slide — just fade in */
+.reveal-item {
+  transform: translateY(20px);
 }
-.reveal-section[data-reveal="right"] .reveal-item {
-  transform: translateX(50px) translateY(15px);
+@media (min-width: 1024px) {
+  .reveal-section[data-reveal="left"] .reveal-item:first-child {
+    transform: translateX(80px) translateY(15px);
+    z-index: 2;
+  }
+  .reveal-section[data-reveal="left"] .reveal-item:last-child {
+    transform: translateX(-80px) translateY(15px);
+  }
+  .reveal-section[data-reveal="right"] .reveal-item:first-child {
+    transform: translateX(80px) translateY(15px);
+  }
+  .reveal-section[data-reveal="right"] .reveal-item:last-child {
+    transform: translateX(-80px) translateY(15px);
+    z-index: 2;
+  }
+  .reveal-section.revealed .reveal-item {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+  .reveal-section.revealed .reveal-item:last-child {
+    transition-delay: 0.08s;
+  }
 }
-.reveal-section.revealed .reveal-item {
-  opacity: 1;
-  transform: translateX(0) translateY(0);
-}
-.reveal-section.revealed .reveal-item:last-child {
-  transition-delay: 0.1s;
+@media (max-width: 1023px) {
+  .reveal-section.revealed .reveal-item {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Instagram Reels - scrollbar hide */
