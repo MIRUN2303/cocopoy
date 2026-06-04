@@ -273,19 +273,38 @@ body { font-family:'Work Sans',sans-serif; -webkit-tap-highlight-color: transpar
           <label class="text-sm text-text-muted-dark font-semibold block mb-2">Instagram Profile URL</label>
           <input class="admin-input" id="instagramProfileUrl" placeholder="https://www.instagram.com/yourprofile/" required/>
         </div>
-        <div class="p-4 bg-primary/30 rounded-xl border border-border-dark">
-          <div class="mb-4">
+        <div class="p-4 bg-primary/30 rounded-xl border border-border-dark space-y-4">
+          <div>
             <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 1 URL</label>
-            <input class="admin-input" id="instagramReel1" placeholder="https://www.instagram.com/reel/DUIxnAck6vD/"/>
+            <input class="admin-input mb-2" id="instagramReel1" placeholder="https://www.instagram.com/reel/DUIxnAck6vD/"/>
+            <div class="flex gap-2">
+              <input class="admin-input text-xs" id="instagramReel1Thumb" placeholder="Reel 1 Thumbnail Image URL (Optional)"/>
+              <button type="button" class="admin-btn admin-btn-outline text-xs py-2 px-4 upload-thumb-btn font-semibold" data-target="instagramReel1Thumb">
+                📤 Upload
+              </button>
+            </div>
           </div>
-          <div class="mb-4">
+          <div>
             <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 2 URL</label>
-            <input class="admin-input" id="instagramReel2" placeholder="https://www.instagram.com/reel/DUIxnAck6vD/"/>
+            <input class="admin-input mb-2" id="instagramReel2" placeholder="https://www.instagram.com/reel/DUIxnAck6vD/"/>
+            <div class="flex gap-2">
+              <input class="admin-input text-xs" id="instagramReel2Thumb" placeholder="Reel 2 Thumbnail Image URL (Optional)"/>
+              <button type="button" class="admin-btn admin-btn-outline text-xs py-2 px-4 upload-thumb-btn font-semibold" data-target="instagramReel2Thumb">
+                📤 Upload
+              </button>
+            </div>
           </div>
           <div>
             <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 3 URL</label>
-            <input class="admin-input" id="instagramReel3" placeholder="https://www.instagram.com/reel/DUIxnAck6vD/"/>
+            <input class="admin-input mb-2" id="instagramReel3" placeholder="https://www.instagram.com/reel/DUIxnAck6vD/"/>
+            <div class="flex gap-2">
+              <input class="admin-input text-xs" id="instagramReel3Thumb" placeholder="Reel 3 Thumbnail Image URL (Optional)"/>
+              <button type="button" class="admin-btn admin-btn-outline text-xs py-2 px-4 upload-thumb-btn font-semibold" data-target="instagramReel3Thumb">
+                📤 Upload
+              </button>
+            </div>
           </div>
+          <input type="file" id="instagramThumbFile" class="hidden" accept="image/*"/>
         </div>
         <button type="submit" id="saveInstagramBtn" class="admin-btn admin-btn-primary">Save Instagram Settings</button>
       </form>
@@ -1140,12 +1159,66 @@ async function loadInstagramSettings() {
       document.getElementById('instagramReel1').value = (settings.reel_urls && settings.reel_urls[0]) || '';
       document.getElementById('instagramReel2').value = (settings.reel_urls && settings.reel_urls[1]) || '';
       document.getElementById('instagramReel3').value = (settings.reel_urls && settings.reel_urls[2]) || '';
+      document.getElementById('instagramReel1Thumb').value = (settings.reel_thumbs && settings.reel_thumbs[0]) || '';
+      document.getElementById('instagramReel2Thumb').value = (settings.reel_thumbs && settings.reel_thumbs[1]) || '';
+      document.getElementById('instagramReel3Thumb').value = (settings.reel_thumbs && settings.reel_thumbs[2]) || '';
     }
     status.classList.add('hidden');
   } catch (err) {
     console.warn('Failed to load Instagram settings:', err);
   }
 }
+
+// Upload thumbnail logic
+let activeThumbTarget = '';
+document.querySelectorAll('.upload-thumb-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    activeThumbTarget = btn.dataset.target;
+    document.getElementById('instagramThumbFile').click();
+  });
+});
+
+document.getElementById('instagramThumbFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file || !activeThumbTarget) return;
+  
+  const btn = document.querySelector(`.upload-thumb-btn[data-target="${activeThumbTarget}"]`);
+  const input = document.getElementById(activeThumbTarget);
+  
+  try {
+    btn.disabled = true;
+    btn.textContent = '⏳ Uploading...';
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `reel_thumb_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+    const filePath = `product-images/${fileName}`;
+    
+    const { data, error } = await db.storage
+      .from('products')
+      .upload(filePath, file);
+      
+    if (error) throw error;
+    
+    const { data: { publicUrl } } = db.storage
+      .from('products')
+      .getPublicUrl(filePath);
+      
+    input.value = publicUrl;
+    btn.textContent = '✅ Image Uploaded!';
+    btn.classList.add('border-green-500/50', 'text-green-400');
+    showToast('Thumbnail uploaded successfully!', 'success');
+  } catch (err) {
+    console.error('Thumbnail upload error:', err);
+    showToast('Upload failed: ' + err.message, 'error');
+    btn.textContent = '❌ Upload Failed';
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => {
+      btn.textContent = '📤 Upload';
+      btn.classList.remove('border-green-500/50', 'text-green-400');
+    }, 2000);
+  }
+});
 
 document.getElementById('instagramForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -1163,6 +1236,11 @@ document.getElementById('instagramForm').addEventListener('submit', async (e) =>
         document.getElementById('instagramReel1').value.trim(),
         document.getElementById('instagramReel2').value.trim(),
         document.getElementById('instagramReel3').value.trim()
+      ],
+      reel_thumbs: [
+        document.getElementById('instagramReel1Thumb').value.trim(),
+        document.getElementById('instagramReel2Thumb').value.trim(),
+        document.getElementById('instagramReel3Thumb').value.trim()
       ]
     };
     await adminUpdateSetting('instagram', value);
