@@ -209,15 +209,6 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 450px; }
 .instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
 
-/* Reel Modal */
-#reelModal { position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.92); backdrop-filter:blur(12px); opacity:0; visibility:hidden; transition:opacity 0.35s ease, visibility 0.35s ease; }
-#reelModal.active { opacity:1; visibility:visible; }
-#reelModal .reel-modal-inner { position:relative; width:100%; max-width:400px; height:88vh; max-height:720px; border-radius:20px; overflow:hidden; background:#000; box-shadow:0 32px 80px rgba(0,0,0,0.7); transform:scale(0.92); transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); }
-#reelModal.active .reel-modal-inner { transform:scale(1); }
-#reelModal iframe { position:absolute; left:0; width:100%; border:none; top:-54px; height:calc(100% + 110px); }
-#reelModalClose { position:absolute; top:12px; right:12px; z-index:10; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.12); border:1.5px solid rgba(255,255,255,0.2); color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
-#reelModalClose:hover { background:rgba(255,255,255,0.25); }
-
 </style>
 </head>
 <body class="bg-bg-light dark:bg-bg-dark font-display text-text-light dark:text-text-dark antialiased">
@@ -741,30 +732,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load Instagram settings
   await loadInstagramSettings();
 
-  // Reel Modal
-  const reelModal = document.createElement('div');
-  reelModal.id = 'reelModal';
-  reelModal.innerHTML = `
-    <div class="reel-modal-inner">
-      <button id="reelModalClose" onclick="closeReelModal()">✕</button>
-      <div id="reelModalFrame" class="w-full h-full"></div>
-    </div>
-  `;
-  document.body.appendChild(reelModal);
-  reelModal.addEventListener('click', (e) => { if (e.target === reelModal) closeReelModal(); });
-
-  window.playReel = function(reelId) {
-    document.getElementById('reelModalFrame').innerHTML = `<iframe src="https://www.instagram.com/reel/${reelId}/embed" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media"></iframe>`;
-    reelModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.closeReelModal = function() {
-    reelModal.classList.remove('active');
-    document.body.style.overflow = '';
-    document.getElementById('reelModalFrame').innerHTML = '';
-  };
-
   async function loadInstagramSettings() {
     const container = document.getElementById('instagramReelsContainer');
     const profileLink = document.getElementById('instagramProfileLink');
@@ -772,7 +739,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let instagramUrl = 'https://www.instagram.com/';
     let reelUrls = ['', '', ''];
-    let reelThumbs = ['', '', ''];
 
     try {
       if (typeof db !== 'undefined') {
@@ -780,7 +746,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!error && data?.value) {
           instagramUrl = data.value.profile_url || instagramUrl;
           reelUrls = data.value.reel_urls || data.value.reel_ids?.map(id => id ? `https://www.instagram.com/reel/${id}/` : '') || reelUrls;
-          reelThumbs = data.value.reel_thumbs || reelThumbs;
         }
       }
     } catch (e) {
@@ -795,81 +760,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       return match ? match[1] : '';
     }
 
-    // If no reels configured, use sample as fallback so user sees something
-    const hasAnyConfig = reelUrls.some(u => u.trim());
-    const sampleReel = 'DUIxnAck6vD';
-    if (!hasAnyConfig) {
-      reelUrls = [
-        `https://www.instagram.com/reel/${sampleReel}/`,
-        '',
-        ''
-      ];
+    const reels = reelUrls.map(u => extractReelId(u)).slice(0, 3);
+    const hasReel = reels.some(Boolean);
+
+    if (!hasReel) {
+      container.innerHTML = '';
+      return;
     }
 
-    // Extract reel IDs (always show 3 positions)
-    const reels = reelUrls.map(u => extractReelId(u)).slice(0, 3);
-    while (reels.length < 3) reels.push('');
-
-    const gradients = [
-      'from-purple-600 via-pink-500 to-orange-400',
-      'from-blue-500 via-purple-500 to-pink-400',
-      'from-yellow-400 via-pink-500 to-purple-600'
-    ];
-    const placeholders = [
-      { icon: '🌸', text: 'Nature\'s Best' },
-      { icon: '🌿', text: 'Farm Fresh' },
-      { icon: '🍃', text: 'Pure Goodness' }
-    ];
-
-    container.innerHTML = reels.map((reelId, i) => {
-      if (reelId) {
-        const thumbId = `reel-thumb-${i}`;
-        const customThumb = reelThumbs[i] || '';
-        const imgStyle = customThumb ? 'opacity:1;transition:opacity 0.4s' : 'opacity:0;transition:opacity 0.4s';
-        return `
-          <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/10 relative shadow-lg shadow-black/20" style="height:480px">
-            <div class="relative w-full h-full cursor-pointer group" onclick="playReel('${reelId}')">
-              <div class="w-full h-full bg-gradient-to-br ${gradients[i]}">
-                <img id="${thumbId}" src="${customThumb}" class="w-full h-full object-cover" alt="" style="${imgStyle}"/>
-              </div>
-              <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors">
-                <div class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      } else {
-        return `
-          <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/5 relative shadow-lg shadow-black/10" style="height:480px">
-            <div class="w-full h-full bg-gradient-to-br ${gradients[i]}">
-            </div>
-          </div>
-        `;
-      }
-    }).join('');
-
-    // Fetch thumbnails (skip if customThumb is defined)
-    reels.forEach(async (reelId, i) => {
-      if (!reelId) return;
-      if (reelThumbs[i]) return;
-      const img = document.getElementById(`reel-thumb-${i}`);
-      if (!img) return;
-      try {
-        const oembedUrl = `https://api.instagram.com/oembed?url=https://www.instagram.com/reel/${reelId}/`;
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(oembedUrl)}`;
-        let data;
-        try { data = await (await fetch(oembedUrl)).json(); }
-        catch { data = await (await fetch(proxyUrl)).json(); }
-        if (data.thumbnail_url) {
-          img.src = data.thumbnail_url;
-          img.style.opacity = '1';
-        }
-      } catch (e) {
-        console.warn('Thumbnail unavailable for', reelId);
-      }
-    });
+    container.innerHTML = reels.map(reelId =>
+      reelId ? `
+        <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/10 relative shadow-lg shadow-black/20" style="height:480px">
+          <iframe src="https://www.instagram.com/reel/${reelId}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full h-full"></iframe>
+        </div>
+      ` : ''
+    ).join('');
   }
 });
 </script>
