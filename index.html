@@ -232,6 +232,11 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 450px; }
 .instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
 
+/* Mobile: only arrows navigate reels, no manual scroll */
+@media (max-width: 767px) {
+  #instagramReelsContainer { overflow-x: hidden; }
+}
+
 </style>
 </head>
 <body class="bg-bg-light dark:bg-bg-dark font-display text-text-light dark:text-text-dark antialiased">
@@ -467,7 +472,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
     <button id="reelPrev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <div id="instagramReelsContainer" class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:center">
+    <div id="instagramReelsContainer" class="flex overflow-x-auto gap-0 md:gap-4 pb-4 snap-x snap-mandatory scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:start">
     </div>
     <button id="reelNext" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
@@ -823,23 +828,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     container.innerHTML = reelIds.map(id =>
       id
-        ? `<div class="flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/20" style="height:500px;background:#0a0a14">
+        ? `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/20" style="height:500px;background:#0a0a14">
             <iframe src="https://www.instagram.com/reel/${id}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen style="background:#0a0a14"></iframe>
            </div>`
-        : `<div class="flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`
+        : `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`
     ).join('');
 
-    // Mobile arrow navigation
+    // Mobile arrow navigation with loop
     const prevBtn = document.getElementById('reelPrev');
     const nextBtn = document.getElementById('reelNext');
     if (prevBtn && nextBtn && container) {
-      const scroll = (dir) => {
-        const gap = 16;
-        const cardW = container.querySelector('.flex-shrink-0')?.offsetWidth || 256;
-        container.scrollBy({ left: dir * (cardW + gap), behavior: 'smooth' });
+      let currentIdx = 0;
+      const cards = () => container.querySelectorAll('.flex-shrink-0');
+      const update = () => {
+        const all = cards();
+        if (!all.length) return;
+        container.scrollTo({ left: currentIdx * container.offsetWidth, behavior: 'smooth' });
       };
-      prevBtn.onclick = () => scroll(-1);
-      nextBtn.onclick = () => scroll(1);
+      prevBtn.onclick = () => {
+        const all = cards();
+        currentIdx = (currentIdx - 1 + all.length) % all.length;
+        update();
+      };
+      nextBtn.onclick = () => {
+        const all = cards();
+        currentIdx = (currentIdx + 1) % all.length;
+        update();
+      };
     }
   }
 });
