@@ -225,6 +225,11 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 @media (max-width: 1023px) {
   .story-section { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
   .story-section + .story-section { border-top: 1px solid rgba(244,124,32,0.1) !important; }
+  .section-collapse { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .section-collapse.open { max-height: 2000px; }
+}
+@media (min-width: 1024px) {
+  .section-collapse { max-height: none !important; overflow: visible !important; display: contents !important; }
 }
 
 /* Instagram Reels - scrollbar hide */
@@ -320,7 +325,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <section id="about" class="story-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row-reverse items-center gap-2 lg:gap-12">
-      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">About</h2>
+      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center section-heading">About</h2>
+      <div class="section-collapse">
       <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-56 sm:h-72 lg:h-96 bg-cover bg-center" style="background-image: url('./image/shop.jpg');"></div>
@@ -330,6 +336,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
         <h2 class="hidden lg:block text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">About</h2>
         <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug lg:leading-relaxed">COCOPOY is where uncompromising flavour meets conscious living. We elevate everyday snacking into a premium experience by pairing exceptional taste with clean, meticulously sourced ingredients. Every creation in our range is a testament to guilt-free luxury—thoughtfully crafted for your well-being and deeply rooted in a passion for sustainable quality. Because nourishing your body should always feel like an indulgence.</p>
       </div>
+      </div>
     </div>
   </div>
 </section>
@@ -338,7 +345,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <section class="story-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row items-center gap-2 lg:gap-12">
-      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">What Makes COCOPOY Truly Organic?</h2>
+      <h2 class="lg:hidden section-heading text-xl font-bold text-primary dark:text-accent w-full text-center">What Makes COCOPOY Truly Organic?</h2>
+      <div class="section-collapse">
       <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-56 sm:h-72 lg:h-96 bg-cover bg-center" style="background-image: url('./image/shop.jpg');"></div>
@@ -349,6 +357,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
         <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 mb-4 leading-snug lg:leading-relaxed">When we say COCOPOY is organic, we are talking about an unbroken chain of purity. True organic cannot exist in isolation; it requires a perfect harmony between where we start and how we finish.</p>
         <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug lg:leading-relaxed">For us, it begins beneath the soil, partnering exclusively with trusted, certified farms where raw ingredients are grown naturally—entirely free from synthetic pesticides, chemical fertilizers, or GMOs. But a pure harvest is only half the battle; it can easily be ruined by heavy chemical processing. That is why our manufacturing steps are just as clean as our sourcing. We intentionally avoid artificial preservatives, chemical additives, and harsh refining methods to ensure that nature's integrity is preserved at every single step.</p>
       </div>
+      </div>
     </div>
   </div>
 </section>
@@ -357,7 +366,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <section id="founder" class="story-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row-reverse items-center gap-2 lg:gap-12">
-      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">Founder</h2>
+      <h2 class="lg:hidden section-heading text-xl font-bold text-primary dark:text-accent w-full text-center">Founder</h2>
+      <div class="section-collapse">
       <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft relative transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-56 sm:h-72 lg:h-96 bg-cover bg-center" style="background-image: url('image/founder1.jpg');"></div>
@@ -369,6 +379,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
       <div class="lg:w-1/2 w-full">
         <h2 class="hidden lg:block text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">Founder</h2>
         <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug lg:leading-relaxed">The heart of COCOPOY is our founder, Nandhini, whose passion for clean nutrition and planet-friendly living inspires our entire journey. She believes that what is good for your body should also be kind to the earth. Through her meticulous focus on quality and pure ingredients, Nandhini ensures that every COCOPOY product is more than just a snack—it's a mindful ritual of health and joy.</p>
+      </div>
       </div>
     </div>
   </div>
@@ -483,7 +494,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
     <span class="h-px w-8 bg-white/10"></span>
   </div>
 
-  <div class="relative" style="min-height:500px">
+  <div id="reelWrapper" class="relative" style="min-height:500px">
     <button id="reelPrev" class="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
@@ -908,16 +919,58 @@ document.addEventListener('DOMContentLoaded', async () => {
       prevBtn.addEventListener('touchend', goPrev);
       nextBtn.addEventListener('click', goNext);
       nextBtn.addEventListener('touchend', goNext);
+    }
 
-      // Stop all iframes when reels section scrolls out of view
-      const reelsSection = container.closest('.instagram-section') || container.parentElement;
-      const sectionObs = new IntersectionObserver(([entry]) => {
+    // Mobile swipe support
+    const reelWrap = document.getElementById('reelWrapper');
+    if (isMobile && reelWrap) {
+      let touchX = 0;
+      reelWrap.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].screenX; }, { passive: true });
+      reelWrap.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].screenX - touchX;
+        if (Math.abs(dx) > 40) { dx < 0 ? goNext() : goPrev(); }
+      }, { passive: true });
+    }
+
+    // Stop all iframes when reels section scrolls out of view
+    const reelsSection = container.closest('.instagram-section') || container.parentElement;
+    const sectionObs = new IntersectionObserver(([entry]) => {
         if (!entry.isIntersecting) {
           track.querySelectorAll('iframe').forEach(f => { if (f.src) f.src = ''; });
         }
       }, { threshold: 0 });
       sectionObs.observe(reelsSection);
-    }
+  }
+
+  // Mobile accordion for story sections
+  if (window.innerWidth < 1024) {
+    const sections = document.querySelectorAll('.story-section');
+    const collapses = document.querySelectorAll('.section-collapse');
+    sections.forEach(s => {
+      const heading = s.querySelector('.section-heading');
+      if (!heading) return;
+      heading.style.cursor = 'pointer';
+      heading.addEventListener('click', () => {
+        const collapse = s.querySelector('.section-collapse');
+        if (!collapse) return;
+        const isOpen = collapse.classList.contains('open');
+        collapses.forEach(c => c.classList.remove('open'));
+        if (!isOpen) collapse.classList.add('open');
+      });
+    });
+    const obs = new IntersectionObserver((entries) => {
+      let best = null;
+      let bestRatio = 0;
+      entries.forEach(e => {
+        if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; }
+      });
+      collapses.forEach(c => c.classList.remove('open'));
+      if (best && bestRatio > 0.12) {
+        const c = best.querySelector('.section-collapse');
+        if (c) c.classList.add('open');
+      }
+    }, { threshold: [0.1, 0.2, 0.3, 0.4, 0.5] });
+    sections.forEach(s => obs.observe(s));
   }
 });
 </script>
