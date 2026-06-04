@@ -240,7 +240,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   #reelTrack { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
   #reelTrack > div { width: 100vw !important; }
   #reelTrack iframe { pointer-events: none !important; }
-  #reelPrev, #reelNext { pointer-events: auto; }
+  #reelPrev, #reelNext { width: 44px !important; height: 44px !important; background: rgba(255,255,255,0.2) !important; }
 }
 
 </style>
@@ -863,6 +863,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isMobile = window.innerWidth < 768;
     let current = 1;
 
+    const goTo = (idx, smooth) => {
+      if (isMobile) {
+        track.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.16,1,0.3,1)' : 'none';
+        track.style.transform = `translateX(-${idx * 100}vw)`;
+      }
+    };
+
     if (isMobile && real.length > 1) {
       const first = track.children[0].outerHTML;
       const last = track.children[track.children.length - 1].outerHTML;
@@ -871,32 +878,36 @@ document.addEventListener('DOMContentLoaded', async () => {
       goTo(current, false);
     }
 
-    const goTo = (idx, smooth) => {
-      if (isMobile) {
-        track.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.16,1,0.3,1)' : 'none';
-        track.style.transform = `translateX(-${idx * 100}vw)`;
-      }
+    const stopIframe = (idx) => {
+      const card = track.children[idx];
+      if (!card) return;
+      const f = card.querySelector('iframe');
+      if (f && f.src) f.src = '';
     };
 
+    function goNext(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (!isMobile) return;
+      stopIframe(current);
+      current++;
+      goTo(current, true);
+      if (current >= real.length + 1) { setTimeout(() => { current = 1; goTo(current, false); }, 380); }
+    }
+
+    function goPrev(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (!isMobile) return;
+      stopIframe(current);
+      current--;
+      goTo(current, true);
+      if (current <= 0) { setTimeout(() => { current = real.length; goTo(current, false); }, 380); }
+    }
+
     if (prevBtn && nextBtn) {
-      const stopIframe = (idx) => {
-        const card = track.children[idx];
-        if (!card) return;
-        const f = card.querySelector('iframe');
-        if (f && f.src) f.src = '';
-      };
-      prevBtn.onclick = () => {
-        stopIframe(current);
-        current--;
-        goTo(current, true);
-        if (current <= 0) { setTimeout(() => { current = real.length; goTo(current, false); }, 380); }
-      };
-      nextBtn.onclick = () => {
-        stopIframe(current);
-        current++;
-        goTo(current, true);
-        if (current >= real.length + 1) { setTimeout(() => { current = 1; goTo(current, false); }, 380); }
-      };
+      prevBtn.addEventListener('click', goPrev);
+      prevBtn.addEventListener('touchend', goPrev);
+      nextBtn.addEventListener('click', goNext);
+      nextBtn.addEventListener('touchend', goNext);
 
       // Stop all iframes when reels section scrolls out of view
       const reelsSection = container.closest('.instagram-section') || container.parentElement;
