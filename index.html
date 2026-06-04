@@ -459,7 +459,15 @@ img { max-width: 100%; height: auto; object-fit: cover; }
     <span class="h-px w-8 bg-white/10"></span>
   </div>
 
-  <div id="instagramReelsContainer" class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:center">
+  <div class="relative">
+    <button id="reelPrev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div id="instagramReelsContainer" class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:center">
+    </div>
+    <button id="reelNext" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
   </div>
 
   <div class="text-center mt-6 mb-10">
@@ -816,6 +824,19 @@ document.addEventListener('DOMContentLoaded', async () => {
            </div>`
         : `<div class="flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`
     ).join('');
+
+    // Mobile arrow navigation
+    const prevBtn = document.getElementById('reelPrev');
+    const nextBtn = document.getElementById('reelNext');
+    if (prevBtn && nextBtn && container) {
+      const scroll = (dir) => {
+        const gap = 16;
+        const cardW = container.querySelector('.flex-shrink-0')?.offsetWidth || 256;
+        container.scrollBy({ left: dir * (cardW + gap), behavior: 'smooth' });
+      };
+      prevBtn.onclick = () => scroll(-1);
+      nextBtn.onclick = () => scroll(1);
+    }
   }
 });
 </script>
