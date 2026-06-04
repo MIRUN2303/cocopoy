@@ -223,17 +223,21 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .reveal-section { overflow: hidden; }
 .reveal-item {
   opacity: 0;
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 .reveal-section[data-reveal="left"] .reveal-item {
-  transform: translateX(-80px);
+  transform: translateX(-60px) translateY(20px);
 }
 .reveal-section[data-reveal="right"] .reveal-item {
-  transform: translateX(80px);
+  transform: translateX(60px) translateY(20px);
 }
 .reveal-section.revealed .reveal-item {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateX(0) translateY(0);
+}
+.reveal-section.revealed .reveal-item:last-child {
+  transition-delay: 0.12s;
 }
 
 /* Instagram Reels - scrollbar hide */
