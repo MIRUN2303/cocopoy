@@ -225,8 +225,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 @media (max-width: 1023px) {
   .story-section { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
   .story-section + .story-section { border-top: 1px solid rgba(244,124,32,0.1) !important; }
-  .section-collapse { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1); }
-  .section-collapse.open { max-height: 2000px; }
+  .section-collapse { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.25,0.46,0.45,0.94); }
 }
 @media (min-width: 1024px) {
   .section-collapse { max-height: none !important; overflow: visible !important; display: contents !important; }
@@ -940,6 +939,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (window.innerWidth < 1024) {
     const sections = document.querySelectorAll('.story-section');
     const collapses = document.querySelectorAll('.section-collapse');
+
+    function openCollapse(el) {
+      if (!el || el.classList.contains('open')) return;
+      el.style.maxHeight = el.scrollHeight + 'px';
+      el.classList.add('open');
+    }
+    function closeCollapse(el) {
+      if (!el || !el.classList.contains('open')) return;
+      el.style.maxHeight = '0';
+      el.classList.remove('open');
+    }
+
     sections.forEach(s => {
       const heading = s.querySelector('.section-heading');
       if (!heading) return;
@@ -947,23 +958,37 @@ document.addEventListener('DOMContentLoaded', async () => {
       heading.addEventListener('click', () => {
         const collapse = s.querySelector('.section-collapse');
         if (!collapse) return;
-        const isOpen = collapse.classList.contains('open');
-        collapses.forEach(c => c.classList.remove('open'));
-        if (!isOpen) collapse.classList.add('open');
+        if (collapse.classList.contains('open')) {
+          closeCollapse(collapse);
+        } else {
+          collapses.forEach(c => { if (c.classList.contains('open')) closeCollapse(c); });
+          openCollapse(collapse);
+        }
       });
     });
+
+    let closeTimer = null;
     const obs = new IntersectionObserver((entries) => {
       let best = null;
       let bestRatio = 0;
       entries.forEach(e => {
         if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; }
       });
-      collapses.forEach(c => c.classList.remove('open'));
-      if (best && bestRatio > 0.12) {
-        const c = best.querySelector('.section-collapse');
-        if (c) c.classList.add('open');
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+      if (best && bestRatio > 0.15) {
+        const bc = best.querySelector('.section-collapse');
+        collapses.forEach(c => {
+          c.closest('.story-section') === best ? openCollapse(c) : closeCollapse(c);
+        });
+      } else {
+        closeTimer = setTimeout(() => {
+          collapses.forEach(c => {
+            const section = c.closest('.story-section');
+            if (section !== best || bestRatio < 0.06) closeCollapse(c);
+          });
+        }, 250);
       }
-    }, { threshold: [0.1, 0.2, 0.3, 0.4, 0.5] });
+    }, { threshold: 0.15 });
     sections.forEach(s => obs.observe(s));
   }
 });
