@@ -209,6 +209,15 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 450px; }
 .instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
 
+/* Reel Modal */
+#reelModal { position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.92); backdrop-filter:blur(12px); opacity:0; visibility:hidden; transition:opacity 0.35s ease, visibility 0.35s ease; }
+#reelModal.active { opacity:1; visibility:visible; }
+#reelModal .reel-modal-inner { position:relative; width:100%; max-width:400px; height:88vh; max-height:720px; border-radius:20px; overflow:hidden; background:#000; box-shadow:0 32px 80px rgba(0,0,0,0.7); transform:scale(0.92); transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+#reelModal.active .reel-modal-inner { transform:scale(1); }
+#reelModal iframe { position:absolute; left:0; width:100%; border:none; top:-54px; height:calc(100% + 110px); }
+#reelModalClose { position:absolute; top:12px; right:12px; z-index:10; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.12); border:1.5px solid rgba(255,255,255,0.2); color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+#reelModalClose:hover { background:rgba(255,255,255,0.25); }
+
 </style>
 </head>
 <body class="bg-bg-light dark:bg-bg-dark font-display text-text-light dark:text-text-dark antialiased">
@@ -419,10 +428,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- Instagram Reels Section -->
 <div>
   <!-- Header -->
-  <div class="flex items-center justify-center gap-4 mb-8">
-    <span class="h-px w-12 bg-accent/10"></span>
+  <div class="flex items-center justify-center mb-8">
     <svg class="w-5 h-5 text-accent/40" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 010 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
-    <span class="h-px w-12 bg-accent/10"></span>
   </div>
 
   <!-- Reels container -->
@@ -734,12 +741,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load Instagram settings
   await loadInstagramSettings();
 
-  window.playReel = function(el, reelId) {
-    el.innerHTML = `
-      <div class="w-full h-full relative overflow-hidden rounded-2xl bg-black">
-        <iframe src="https://www.instagram.com/reel/${reelId}/embed" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="absolute left-0 w-full h-[calc(100%+110px)]" style="top: -54px; border: none;"></iframe>
-      </div>
-    `;
+  // Reel Modal
+  const reelModal = document.createElement('div');
+  reelModal.id = 'reelModal';
+  reelModal.innerHTML = `
+    <div class="reel-modal-inner">
+      <button id="reelModalClose" onclick="closeReelModal()">✕</button>
+      <div id="reelModalFrame" class="w-full h-full"></div>
+    </div>
+  `;
+  document.body.appendChild(reelModal);
+  reelModal.addEventListener('click', (e) => { if (e.target === reelModal) closeReelModal(); });
+
+  window.playReel = function(reelId) {
+    document.getElementById('reelModalFrame').innerHTML = `<iframe src="https://www.instagram.com/reel/${reelId}/embed" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media"></iframe>`;
+    reelModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeReelModal = function() {
+    reelModal.classList.remove('active');
+    document.body.style.overflow = '';
+    document.getElementById('reelModalFrame').innerHTML = '';
   };
 
   async function loadInstagramSettings() {
@@ -805,9 +828,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const imgStyle = customThumb ? 'opacity:1;transition:opacity 0.4s' : 'opacity:0;transition:opacity 0.4s';
         return `
           <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/10 relative shadow-lg shadow-black/20" style="height:480px">
-            <div class="relative w-full h-full cursor-pointer group" onclick="playReel(this,'${reelId}')">
-              <div class="w-full h-full bg-gradient-to-br ${gradients[i]} flex items-center justify-center">
-                <img id="${thumbId}" src="${customThumb}" class="w-full h-full object-cover absolute inset-0" alt="" style="${imgStyle}"/>
+            <div class="relative w-full h-full cursor-pointer group" onclick="playReel('${reelId}')">
+              <div class="w-full h-full bg-gradient-to-br ${gradients[i]}">
+                <img id="${thumbId}" src="${customThumb}" class="w-full h-full object-cover" alt="" style="${imgStyle}"/>
               </div>
               <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors">
                 <div class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -819,11 +842,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
       } else {
         return `
-          <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/5 relative shadow-lg shadow-black/10">
-            <div class="w-full h-[480px] bg-gradient-to-br ${gradients[i]} flex flex-col items-center justify-center gap-3 p-6 text-white/60">
-              <span class="text-4xl">${placeholders[i].icon}</span>
-              <span class="text-sm font-semibold tracking-wide">${placeholders[i].text}</span>
-              <span class="text-[10px] uppercase tracking-widest opacity-40">Reel ${i + 1}</span>
+          <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/5 relative shadow-lg shadow-black/10" style="height:480px">
+            <div class="w-full h-full bg-gradient-to-br ${gradients[i]}">
             </div>
           </div>
         `;
