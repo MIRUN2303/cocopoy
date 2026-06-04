@@ -235,9 +235,10 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 
 /* Mobile: only arrows navigate reels, no manual scroll */
 @media (max-width: 767px) {
-  #instagramReelsContainer { overflow-x: hidden; pointer-events: none; }
+  .reels-wrap { pointer-events: none; }
+  #instagramReelsContainer { overflow-x: hidden; }
   #reelTrack { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
-  #reelTrack > div { width: 100vw !important; pointer-events: none; }
+  #reelTrack > div { width: 100vw !important; }
   #reelPrev, #reelNext { pointer-events: auto; }
 }
 
@@ -481,7 +482,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
     <span class="h-px w-8 bg-white/10"></span>
   </div>
 
-  <div class="relative">
+  <div class="relative reels-wrap">
     <button id="reelPrev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
@@ -845,10 +846,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const cardHTML = id =>
       id
-        ? `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/20" style="height:500px;background:#0a0a14">
+        ? `<div class="flex-shrink-0 md:w-96 snap-center rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/20" style="height:500px;background:#0a0a14">
             <iframe src="https://www.instagram.com/reel/${id}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen style="background:#0a0a14"></iframe>
            </div>`
-        : `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`;
+        : `<div class="flex-shrink-0 md:w-96 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`;
 
     const real = reelIds.filter(Boolean);
     track.innerHTML = real.map(cardHTML).join('');
