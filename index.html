@@ -747,6 +747,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     profileLink.href = instagramUrl;
 
+    let thumbnails = ['', '', ''];
+
+    try {
+      if (typeof db !== 'undefined') {
+        const { data, error } = await db.from('site_settings').select('value').eq('id', 'instagram').maybeSingle();
+        if (!error && data?.value) {
+          thumbnails = data.value.thumbnails || thumbnails;
+        }
+      }
+    } catch (e) {}
+
     const gradients = [
       'from-purple-600 via-pink-500 to-orange-400',
       'from-blue-500 via-purple-500 to-pink-400',
@@ -755,13 +766,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     container.innerHTML = reelIds.map((reelId, i) => {
       const reelUrl = reelId ? `https://www.instagram.com/reel/${reelId}/` : instagramUrl;
+      const thumb = thumbnails[i];
+      const hasContent = reelId && thumb;
       return `
         <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl overflow-hidden border border-accent/10">
-          <a href="${reelUrl}" target="_blank" rel="noopener noreferrer" class="reel-card-inner">
-            <div class="w-full h-[450px] bg-gradient-to-br ${gradients[i]} flex flex-col items-center justify-center gap-4 p-6 text-white/90">
-              <svg class="w-14 h-14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 010 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
-              <svg class="w-12 h-12 text-white/80" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              <span class="text-sm font-semibold tracking-wider uppercase">Reel ${i + 1}</span>
+          <a href="${reelUrl}" target="_blank" rel="noopener noreferrer" class="reel-card-inner block relative">
+            ${hasContent
+              ? `<img src="${thumb}" class="w-full h-[450px] object-cover" alt="Instagram Reel"/>
+                 <div class="absolute inset-0 bg-black/10 hover:bg-black/30 transition-colors"></div>`
+              : `<div class="w-full h-[450px] bg-gradient-to-br ${gradients[i]} flex flex-col items-center justify-center gap-4 p-6 text-white/90">
+                  <svg class="w-14 h-14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 010 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                  <svg class="w-10 h-10 text-white/80" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  <span class="text-sm font-semibold tracking-wider uppercase">Reel ${i + 1}</span>
+                </div>`
+            }
+            <div class="absolute bottom-3 right-3 bg-black/60 rounded-full p-2">
+              <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             </div>
           </a>
         </div>

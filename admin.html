@@ -273,18 +273,37 @@ body { font-family:'Work Sans',sans-serif; -webkit-tap-highlight-color: transpar
           <label class="text-sm text-text-muted-dark font-semibold block mb-2">Instagram Profile URL</label>
           <input class="admin-input" id="instagramProfileUrl" placeholder="https://www.instagram.com/yourprofile/" required/>
         </div>
-        <div>
-          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 1 ID</label>
-          <input class="admin-input" id="instagramReel1" placeholder="e.g. CxYzAbCdEfG"/>
-          <p class="text-[10px] text-text-muted-dark mt-1 italic">The ID from the reel URL: instagram.com/reel/<strong class="text-secondary">THIS_PART</strong>/</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-primary/30 rounded-xl border border-border-dark">
+          <div>
+            <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 1 ID</label>
+            <input class="admin-input" id="instagramReel1" placeholder="e.g. CxYzAbCdEfG"/>
+            <p class="text-[10px] text-text-muted-dark mt-1 italic">instagram.com/reel/<strong class="text-secondary">THIS</strong>/</p>
+          </div>
+          <div>
+            <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 1 Thumbnail URL</label>
+            <input class="admin-input" id="instagramThumb1" placeholder="Paste image URL here"/>
+            <p class="text-[10px] text-text-muted-dark mt-1 italic">Right-click reel on Instagram → Copy image URL</p>
+          </div>
         </div>
-        <div>
-          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 2 ID</label>
-          <input class="admin-input" id="instagramReel2" placeholder="e.g. CxYzAbCdEfG"/>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-primary/30 rounded-xl border border-border-dark">
+          <div>
+            <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 2 ID</label>
+            <input class="admin-input" id="instagramReel2" placeholder="e.g. CxYzAbCdEfG"/>
+          </div>
+          <div>
+            <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 2 Thumbnail URL</label>
+            <input class="admin-input" id="instagramThumb2" placeholder="Paste image URL here"/>
+          </div>
         </div>
-        <div>
-          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 3 ID</label>
-          <input class="admin-input" id="instagramReel3" placeholder="e.g. CxYzAbCdEfG"/>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-primary/30 rounded-xl border border-border-dark">
+          <div>
+            <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 3 ID</label>
+            <input class="admin-input" id="instagramReel3" placeholder="e.g. CxYzAbCdEfG"/>
+          </div>
+          <div>
+            <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 3 Thumbnail URL</label>
+            <input class="admin-input" id="instagramThumb3" placeholder="Paste image URL here"/>
+          </div>
         </div>
         <button type="submit" id="saveInstagramBtn" class="admin-btn admin-btn-primary">Save Instagram Settings</button>
       </form>
@@ -1139,6 +1158,9 @@ async function loadInstagramSettings() {
       document.getElementById('instagramReel1').value = (settings.reel_ids && settings.reel_ids[0]) || '';
       document.getElementById('instagramReel2').value = (settings.reel_ids && settings.reel_ids[1]) || '';
       document.getElementById('instagramReel3').value = (settings.reel_ids && settings.reel_ids[2]) || '';
+      document.getElementById('instagramThumb1').value = (settings.thumbnails && settings.thumbnails[0]) || '';
+      document.getElementById('instagramThumb2').value = (settings.thumbnails && settings.thumbnails[1]) || '';
+      document.getElementById('instagramThumb3').value = (settings.thumbnails && settings.thumbnails[2]) || '';
     }
     status.classList.add('hidden');
   } catch (err) {
@@ -1162,6 +1184,11 @@ document.getElementById('instagramForm').addEventListener('submit', async (e) =>
         document.getElementById('instagramReel1').value.trim(),
         document.getElementById('instagramReel2').value.trim(),
         document.getElementById('instagramReel3').value.trim()
+      ],
+      thumbnails: [
+        document.getElementById('instagramThumb1').value.trim(),
+        document.getElementById('instagramThumb2').value.trim(),
+        document.getElementById('instagramThumb3').value.trim()
       ]
     };
     await adminUpdateSetting('instagram', value);
