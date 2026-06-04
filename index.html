@@ -419,36 +419,15 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- Instagram Reels Section -->
 <div>
   <!-- Header -->
-  <div class="flex items-center justify-center gap-4 mb-6">
-    <span class="text-accent/30 text-xs font-light tracking-[0.3em] uppercase">Moments</span>
-    <span class="text-accent/20">✦</span>
-    <svg class="w-5 h-5 text-accent/60" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 010 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
-    <span class="text-accent/20">✦</span>
-    <span class="text-accent/30 text-xs font-light tracking-[0.3em] uppercase">Reels</span>
+  <div class="flex items-center justify-center gap-4 mb-8">
+    <span class="h-px w-12 bg-accent/10"></span>
+    <svg class="w-5 h-5 text-accent/40" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 010 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
+    <span class="h-px w-12 bg-accent/10"></span>
   </div>
 
-  <h3 class="text-xl font-bold text-center mb-2">From the Farm</h3>
-  <p class="text-center text-accent/40 text-sm mb-8 italic">Fresh glimpses from our daily life in Pollachi</p>
-
-  <div class="flex items-center justify-center">
-    <!-- Left decorative text -->
-    <div class="hidden lg:flex flex-col items-center gap-1 text-accent/15 shrink-0 w-20">
-      <span class="text-[7px] font-light tracking-[0.4em] uppercase">Taste</span>
-      <div class="w-8 h-px bg-accent/10 my-1"></div>
-      <span class="text-[7px] font-light tracking-[0.4em] uppercase">Nature</span>
-    </div>
-
-    <!-- Reels container -->
-    <div id="instagramReelsContainer" class="instagram-scroll flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory scroll-smooth px-2" style="justify-content:center">
-      <!-- Reels loaded dynamically from settings -->
-    </div>
-
-    <!-- Right decorative text -->
-    <div class="hidden lg:flex flex-col items-center gap-1 text-accent/15 shrink-0 w-20">
-      <span class="text-[7px] font-light tracking-[0.4em] uppercase">Fresh</span>
-      <div class="w-8 h-px bg-accent/10 my-1"></div>
-      <span class="text-[7px] font-light tracking-[0.4em] uppercase">Pure</span>
-    </div>
+  <!-- Reels container -->
+  <div id="instagramReelsContainer" class="instagram-scroll flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory scroll-smooth justify-center px-2">
+    <!-- Reels loaded dynamically from settings -->
   </div>
 
   <div class="text-center mt-8 mb-10">
@@ -755,6 +734,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load Instagram settings
   await loadInstagramSettings();
 
+  window.playReel = function(el, reelId) {
+    el.innerHTML = `<iframe src="https://www.instagram.com/reel/${reelId}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full h-full"></iframe>`;
+  };
+
   async function loadInstagramSettings() {
     const container = document.getElementById('instagramReelsContainer');
     const profileLink = document.getElementById('instagramProfileLink');
@@ -811,9 +794,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     container.innerHTML = reels.map((reelId, i) => {
       if (reelId) {
+        const thumbId = `reel-thumb-${i}`;
         return `
           <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/10 relative shadow-lg shadow-black/20" style="height:480px">
-            <iframe src="https://www.instagram.com/reel/${reelId}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full h-full"></iframe>
+            <div class="relative w-full h-full cursor-pointer group" onclick="playReel(this,'${reelId}')">
+              <div class="w-full h-full bg-gradient-to-br ${gradients[i]} flex items-center justify-center">
+                <img id="${thumbId}" class="w-full h-full object-cover absolute inset-0" alt="" style="opacity:0;transition:opacity 0.4s"/>
+              </div>
+              <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors">
+                <div class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-black ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+            </div>
           </div>
         `;
       } else {
@@ -828,6 +821,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
       }
     }).join('');
+
+    // Fetch thumbnails
+    reels.forEach(async (reelId, i) => {
+      if (!reelId) return;
+      const img = document.getElementById(`reel-thumb-${i}`);
+      if (!img) return;
+      try {
+        const oembedUrl = `https://api.instagram.com/oembed?url=https://www.instagram.com/reel/${reelId}/`;
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(oembedUrl)}`;
+        let data;
+        try { data = await (await fetch(oembedUrl)).json(); }
+        catch { data = await (await fetch(proxyUrl)).json(); }
+        if (data.thumbnail_url) {
+          img.src = data.thumbnail_url;
+          img.style.opacity = '1';
+        }
+      } catch (e) {
+        console.warn('Thumbnail unavailable for', reelId);
+      }
+    });
   }
 });
 </script>
