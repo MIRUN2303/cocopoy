@@ -783,16 +783,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!reelId) return;
       const img = document.getElementById(`ig-thumb-${i}`);
       if (!img) return;
-      const url = `https://api.instagram.com/oembed?url=https://www.instagram.com/reel/${reelId}/`;
-      try {
-        let data;
-        try { data = await (await fetch(url)).json(); }
-        catch { data = await (await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)).json(); }
-        if (data && data.thumbnail_url) {
-          img.src = data.thumbnail_url;
-          img.onload = () => { img.style.opacity = '1'; };
-        }
-      } catch (e) {}
+      const oembedUrl = `https://api.instagram.com/oembed?url=https://www.instagram.com/reel/${reelId}/`;
+      const proxies = [
+        () => fetch(oembedUrl),
+        () => fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(oembedUrl)}`),
+        () => fetch(`https://corsproxy.io/?url=${encodeURIComponent(oembedUrl)}`),
+      ];
+      for (const proxy of proxies) {
+        try {
+          const res = await proxy();
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data?.thumbnail_url) {
+            img.src = data.thumbnail_url;
+            img.onload = () => { img.style.opacity = '1'; };
+            return;
+          }
+        } catch (e) {}
+      }
     });
   }
 });
