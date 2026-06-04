@@ -221,10 +221,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 
 /* No scroll reveal animations */
 
-/* Mobile tighter layout for About section */
-@media (max-width: 1023px) {
-  #about .flex { gap: 0.75rem; }
-}
+/* Mobile tighter layout for story sections */
 
 /* Instagram Reels - scrollbar hide */
 .instagram-scroll::-webkit-scrollbar { display: none; }
@@ -235,6 +232,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 /* Mobile: only arrows navigate reels, no manual scroll */
 @media (max-width: 767px) {
   #instagramReelsContainer { overflow-x: hidden; }
+  #reelTrack { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
 }
 
 </style>
@@ -313,7 +311,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- About Section -->
 <section id="about" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
-    <div class="flex flex-col lg:flex-row-reverse items-center gap-6 lg:gap-12">
+    <div class="flex flex-col lg:flex-row-reverse items-center gap-4 lg:gap-12">
       <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">About</h2>
       <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
@@ -331,14 +329,17 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- What Makes COCOPOY Truly Organic? -->
 <section class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
-    <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+    <div class="flex flex-col lg:flex-row items-center gap-4 lg:gap-12">
+      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">What Makes COCOPOY Truly Organic?</h2>
+      <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-56 sm:h-72 lg:h-96 bg-cover bg-center" style="background-image: url('./image/shop.jpg');"></div>
       </div>
-      <div class="lg:w-1/2">
-        <h2 class="text-xl sm:text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">What Makes COCOPOY Truly Organic?</h2>
-        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 mb-4 leading-snug">When we say COCOPOY is organic, we are talking about an unbroken chain of purity. True organic cannot exist in isolation; it requires a perfect harmony between where we start and how we finish.</p>
-        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug">For us, it begins beneath the soil, partnering exclusively with trusted, certified farms where raw ingredients are grown naturally—entirely free from synthetic pesticides, chemical fertilizers, or GMOs. But a pure harvest is only half the battle; it can easily be ruined by heavy chemical processing. That is why our manufacturing steps are just as clean as our sourcing. We intentionally avoid artificial preservatives, chemical additives, and harsh refining methods to ensure that nature's integrity is preserved at every single step.</p>
+      <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
+      <div class="lg:w-1/2 w-full">
+        <h2 class="hidden lg:block text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">What Makes COCOPOY Truly Organic?</h2>
+        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 mb-4 leading-snug lg:leading-relaxed">When we say COCOPOY is organic, we are talking about an unbroken chain of purity. True organic cannot exist in isolation; it requires a perfect harmony between where we start and how we finish.</p>
+        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug lg:leading-relaxed">For us, it begins beneath the soil, partnering exclusively with trusted, certified farms where raw ingredients are grown naturally—entirely free from synthetic pesticides, chemical fertilizers, or GMOs. But a pure harvest is only half the battle; it can easily be ruined by heavy chemical processing. That is why our manufacturing steps are just as clean as our sourcing. We intentionally avoid artificial preservatives, chemical additives, and harsh refining methods to ensure that nature's integrity is preserved at every single step.</p>
       </div>
     </div>
   </div>
@@ -347,16 +348,19 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- Founder Section -->
 <section id="founder" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
-    <div class="flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12">
+    <div class="flex flex-col lg:flex-row-reverse items-center gap-6 lg:gap-12">
+      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">Founder</h2>
+      <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft relative transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-56 sm:h-72 lg:h-96 bg-cover bg-center" style="background-image: url('image/founder1.jpg');"></div>
         <div class="absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-500">
           <h3 class="text-white text-2xl font-bold">NANDHINI</h3>
         </div>
       </div>
-      <div class="lg:w-1/2">
-        <h2 class="text-xl sm:text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">Founder</h2>
-        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug">The heart of COCOPOY is our founder, Nandhini, whose passion for clean nutrition and planet-friendly living inspires our entire journey. She believes that what is good for your body should also be kind to the earth. Through her meticulous focus on quality and pure ingredients, Nandhini ensures that every COCOPOY product is more than just a snack—it's a mindful ritual of health and joy.</p>
+      <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
+      <div class="lg:w-1/2 w-full">
+        <h2 class="hidden lg:block text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">Founder</h2>
+        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug lg:leading-relaxed">The heart of COCOPOY is our founder, Nandhini, whose passion for clean nutrition and planet-friendly living inspires our entire journey. She believes that what is good for your body should also be kind to the earth. Through her meticulous focus on quality and pure ingredients, Nandhini ensures that every COCOPOY product is more than just a snack—it's a mindful ritual of health and joy.</p>
       </div>
     </div>
   </div>
@@ -475,7 +479,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
     <button id="reelPrev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <div id="instagramReelsContainer" class="flex overflow-x-auto gap-0 md:gap-4 pb-4 snap-x snap-mandatory scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:start">
+    <div id="instagramReelsContainer" class="flex overflow-x-auto gap-0 md:gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:scroll-smooth" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:start">
+      <div id="reelTrack" class="flex gap-0 md:gap-4"></div>
     </div>
     <button id="reelNext" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/70 hover:bg-white/20 transition-all md:hidden">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
@@ -826,56 +831,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     const profileLink = document.getElementById('instagramProfileLink');
     if (profileLink && profileUrl) profileLink.href = profileUrl;
 
+    const track = document.getElementById('reelTrack');
+    if (!track) return;
+
     if (reelIds.length === 0) reelIds = ['DUIxnAck6vD', 'DUIxnAck6vD', 'DUIxnAck6vD'];
     while (reelIds.length < 3) reelIds.push('');
 
-    container.innerHTML = reelIds.map(id =>
+    const cardHTML = id =>
       id
         ? `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/20" style="height:500px;background:#0a0a14">
             <iframe src="https://www.instagram.com/reel/${id}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen style="background:#0a0a14"></iframe>
            </div>`
-        : `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`
-    ).join('');
+        : `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`;
 
-    // Seamless infinite loop on mobile
+    const real = reelIds.filter(Boolean);
+    track.innerHTML = real.map(cardHTML).join('');
+
+    // Mobile: clone first/last for seamless loop
     const prevBtn = document.getElementById('reelPrev');
     const nextBtn = document.getElementById('reelNext');
-    if (prevBtn && nextBtn && container && window.innerWidth < 768) {
-      const realIds = reelIds.filter(Boolean);
-      if (realIds.length > 1) {
-        // Clone first card at end, last card at start for seamless loop
-        const html = container.innerHTML;
-        const cards = container.querySelectorAll('.flex-shrink-0');
-        if (cards.length >= 2) {
-          const firstHTML = cards[0].outerHTML;
-          const lastHTML = cards[cards.length - 1].outerHTML;
-          container.innerHTML = lastHTML + html + firstHTML;
-        }
+    let isMobile = window.innerWidth < 768;
+    let current = 1;
+
+    if (isMobile && real.length > 1) {
+      const first = track.children[0].outerHTML;
+      const last = track.children[track.children.length - 1].outerHTML;
+      track.innerHTML = last + track.innerHTML + first;
+      current = 1;
+    }
+
+    const goTo = (idx, smooth) => {
+      if (isMobile) {
+        track.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.16,1,0.3,1)' : 'none';
+        track.style.transform = `translateX(-${idx * 100}%)`;
       }
-      let currentIdx = 1;
-      const allCards = () => container.querySelectorAll('.flex-shrink-0');
-      const goTo = (idx, smooth) => {
-        const all = allCards();
-        if (!all.length) return;
-        container.scrollTo({ left: idx * container.offsetWidth, behavior: smooth ? 'smooth' : 'instant' });
-      };
-      const clamp = (idx) => {
-        const all = allCards();
-        const last = all.length - 1;
-        if (idx <= 0) return last - 1;
-        if (idx >= last) return 1;
-        return idx;
-      };
+    };
+
+    if (prevBtn && nextBtn) {
       prevBtn.onclick = () => {
-        currentIdx--;
-        goTo(currentIdx, true);
-        if (currentIdx <= 0) { setTimeout(() => { currentIdx = clamp(currentIdx); goTo(currentIdx, false); }, 400); }
+        current--;
+        goTo(current, true);
+        if (current <= 0) { setTimeout(() => { current = real.length; goTo(current, false); }, 380); }
       };
       nextBtn.onclick = () => {
-        currentIdx++;
-        goTo(currentIdx, true);
-        const all = allCards();
-        if (currentIdx >= all.length - 1) { setTimeout(() => { currentIdx = clamp(currentIdx); goTo(currentIdx, false); }, 400); }
+        current++;
+        goTo(current, true);
+        if (current >= real.length + 1) { setTimeout(() => { current = 1; goTo(current, false); }, 380); }
       };
     }
   }
