@@ -222,6 +222,10 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 /* No scroll reveal animations */
 
 /* Mobile tighter layout for story sections */
+@media (max-width: 1023px) {
+  .story-section { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+  .story-section + .story-section { border-top: 1px solid rgba(244,124,32,0.1) !important; }
+}
 
 /* Instagram Reels - scrollbar hide */
 .instagram-scroll::-webkit-scrollbar { display: none; }
@@ -309,7 +313,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <style>@media (min-width:768px) { .logo { width:280px; } }</style>
 
 <!-- About Section -->
-<section id="about" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
+<section id="about" class="story-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row-reverse items-center gap-4 lg:gap-12">
       <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">About</h2>
@@ -327,7 +331,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 </section>
 
 <!-- What Makes COCOPOY Truly Organic? -->
-<section class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
+<section class="story-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row items-center gap-4 lg:gap-12">
       <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">What Makes COCOPOY Truly Organic?</h2>
@@ -346,7 +350,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 </section>
 
 <!-- Founder Section -->
-<section id="founder" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
+<section id="founder" class="story-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row-reverse items-center gap-6 lg:gap-12">
       <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">Founder</h2>
