@@ -837,26 +837,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         : `<div class="flex-shrink-0 w-full md:w-64 snap-center rounded-xl border border-white/5" style="height:500px;background:#0a0a14"></div>`
     ).join('');
 
-    // Mobile arrow navigation with loop
+    // Seamless infinite loop on mobile
     const prevBtn = document.getElementById('reelPrev');
     const nextBtn = document.getElementById('reelNext');
-    if (prevBtn && nextBtn && container) {
-      let currentIdx = 0;
-      const cards = () => container.querySelectorAll('.flex-shrink-0');
-      const update = () => {
-        const all = cards();
+    if (prevBtn && nextBtn && container && window.innerWidth < 768) {
+      const realIds = reelIds.filter(Boolean);
+      if (realIds.length > 1) {
+        // Clone first card at end, last card at start for seamless loop
+        const html = container.innerHTML;
+        const cards = container.querySelectorAll('.flex-shrink-0');
+        if (cards.length >= 2) {
+          const firstHTML = cards[0].outerHTML;
+          const lastHTML = cards[cards.length - 1].outerHTML;
+          container.innerHTML = lastHTML + html + firstHTML;
+        }
+      }
+      let currentIdx = 1;
+      const allCards = () => container.querySelectorAll('.flex-shrink-0');
+      const goTo = (idx, smooth) => {
+        const all = allCards();
         if (!all.length) return;
-        container.scrollTo({ left: currentIdx * container.offsetWidth, behavior: 'smooth' });
+        container.scrollTo({ left: idx * container.offsetWidth, behavior: smooth ? 'smooth' : 'instant' });
+      };
+      const clamp = (idx) => {
+        const all = allCards();
+        const last = all.length - 1;
+        if (idx <= 0) return last - 1;
+        if (idx >= last) return 1;
+        return idx;
       };
       prevBtn.onclick = () => {
-        const all = cards();
-        currentIdx = (currentIdx - 1 + all.length) % all.length;
-        update();
+        currentIdx--;
+        goTo(currentIdx, true);
+        if (currentIdx <= 0) { setTimeout(() => { currentIdx = clamp(currentIdx); goTo(currentIdx, false); }, 400); }
       };
       nextBtn.onclick = () => {
-        const all = cards();
-        currentIdx = (currentIdx + 1) % all.length;
-        update();
+        currentIdx++;
+        goTo(currentIdx, true);
+        const all = allCards();
+        if (currentIdx >= all.length - 1) { setTimeout(() => { currentIdx = clamp(currentIdx); goTo(currentIdx, false); }, 400); }
       };
     }
   }
