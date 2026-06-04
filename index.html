@@ -235,9 +235,10 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 
 /* Mobile: only arrows navigate reels, no manual scroll */
 @media (max-width: 767px) {
-  #instagramReelsContainer { overflow-x: hidden; }
+  #instagramReelsContainer { overflow-x: hidden; pointer-events: none; }
   #reelTrack { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
-  #reelTrack > div { width: 100vw !important; }
+  #reelTrack > div { width: 100vw !important; pointer-events: none; }
+  #reelPrev, #reelNext { pointer-events: auto; }
 }
 
 </style>
