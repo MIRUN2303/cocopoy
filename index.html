@@ -208,7 +208,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .instagram-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 .instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 450px; }
 .instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
-.instagram-reel-card iframe { width:100% !important; }
+
 </style>
 </head>
 <body class="bg-bg-light dark:bg-bg-dark font-display text-text-light dark:text-text-dark antialiased">
@@ -745,20 +745,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     profileLink.href = instagramUrl;
 
-    const hasAnyReel = reelUrls.some(u => extractReelId(u));
-    if (!hasAnyReel) {
-      container.innerHTML = `<p class="text-accent/30 text-sm italic col-span-full">Configure reels in Admin → Social</p>`;
-    } else {
-      container.innerHTML = reelUrls.map((url, i) => {
-        const reelId = extractReelId(url);
-        if (!reelId) return '';
-        return `
-          <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl overflow-hidden border border-accent/10">
-            <iframe src="https://www.instagram.com/reel/${reelId}/embed" width="100%" height="480" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full"></iframe>
-          </div>
-        `;
-      }).join('');
+    // Extract reel IDs
+    const reels = reelUrls.map(u => extractReelId(u)).filter(Boolean);
+
+    if (reels.length === 0) {
+      container.innerHTML = `<p class="text-accent/30 text-sm italic">Configure reels in Admin → Social</p>`;
+      return;
     }
+
+    // Build cards with thumbnail + play button
+    container.innerHTML = reels.map((reelId, i) => `
+      <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl overflow-hidden border border-accent/10 bg-white/5 relative">
+        <a href="https://www.instagram.com/reel/${reelId}/" target="_blank" rel="noopener noreferrer" class="block relative w-full">
+          <img id="thumb-${i}" class="w-full h-[480px] object-cover" alt="Reel ${i + 1}" style="background:linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)"/>
+          <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/40 transition-colors">
+            <div class="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-xl">
+              <svg class="w-7 h-7 text-black ml-1" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    `).join('');
+
+    // Fetch thumbnails via Instagram oEmbed
+    reels.forEach(async (reelId, i) => {
+      const img = document.getElementById(`thumb-${i}`);
+      try {
+        const res = await fetch(`https://api.instagram.com/oembed?url=https://www.instagram.com/reel/${reelId}/`);
+        const data = await res.json();
+        if (data.thumbnail_url) img.src = data.thumbnail_url;
+      } catch (e) {
+        console.warn('Thumbnail fetch failed for', reelId);
+      }
+    });
   }
 });
 </script>
