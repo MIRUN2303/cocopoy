@@ -779,6 +779,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     profileLink.href = instagramUrl;
 
+    function extractReelId(url) {
+      if (!url) return '';
+      const match = url.match(/instagram\.com\/reel\/([^\/?#]+)/);
+      return match ? match[1] : '';
+    }
+
     // Extract reel IDs (always show 3 positions)
     const reels = reelUrls.map(u => extractReelId(u)).slice(0, 3);
     while (reels.length < 3) reels.push('');
