@@ -207,17 +207,33 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .shop-now-btn {
   position: relative;
   overflow: visible;
-  box-shadow: 0 0 0 0 rgba(244,124,32,0.6);
-  animation: attention-pulse 1.5s ease-in-out infinite;
+  animation: shop-glow 1.2s ease-in-out infinite;
 }
 .shop-now-btn:hover {
-  box-shadow: 0 0 30px rgba(244,124,32,0.7);
   animation: none;
-  transform: scale(1.05) !important;
+  box-shadow: 0 0 40px 8px rgba(244,124,32,0.6);
+  transform: scale(1.08);
 }
-@keyframes attention-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(244,124,32,0.4); }
-  50% { box-shadow: 0 0 20px 6px rgba(244,124,32,0.25); }
+@keyframes shop-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244,124,32,0.6); transform: scale(1); }
+  50% { box-shadow: 0 0 30px 8px rgba(244,124,32,0.4); transform: scale(1.04); }
+}
+
+/* Scroll reveal animations */
+.reveal-section { overflow: hidden; }
+.reveal-item {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-section[data-reveal="left"] .reveal-item {
+  transform: translateX(-80px);
+}
+.reveal-section[data-reveal="right"] .reveal-item {
+  transform: translateX(80px);
+}
+.reveal-section.revealed .reveal-item {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* Instagram Reels - scrollbar hide */
@@ -300,14 +316,14 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <style>@media (min-width:768px) { .logo { width:280px; } }</style>
 
 <!-- About Section -->
-<section id="about" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
+<section id="about" class="reveal-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark" data-reveal="left">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row items-center gap-12">
-      <div class="lg:w-1/2">
+      <div class="reveal-item lg:w-1/2">
         <h2 class="text-3xl sm:text-4xl font-bold text-primary dark:text-accent mb-6">About</h2>
         <p class="text-lg text-primary/80 dark:text-accent/80 mb-4 leading-relaxed">COCOPOY is where uncompromising flavour meets conscious living. We elevate everyday snacking into a premium experience by pairing exceptional taste with clean, meticulously sourced ingredients. Every creation in our range is a testament to guilt-free luxury—thoughtfully crafted for your well-being and deeply rooted in a passion for sustainable quality. Because nourishing your body should always feel like an indulgence.</p>
       </div>
-      <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
+      <div class="reveal-item lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-72 sm:h-96 bg-cover bg-center" style="background-image: url('./image/shop.jpg');"></div>
       </div>
     </div>
@@ -315,13 +331,13 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 </section>
 
 <!-- What Makes COCOPOY Truly Organic? -->
-<section class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
+<section class="reveal-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark" data-reveal="right">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row items-center gap-12">
-      <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
+      <div class="reveal-item lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-72 sm:h-96 bg-cover bg-center" style="background-image: url('./image/shop.jpg');"></div>
       </div>
-      <div class="lg:w-1/2">
+      <div class="reveal-item lg:w-1/2">
         <h2 class="text-3xl sm:text-4xl font-bold text-primary dark:text-accent mb-6">What Makes COCOPOY Truly Organic?</h2>
         <p class="text-lg text-primary/80 dark:text-accent/80 mb-4 leading-relaxed">When we say COCOPOY is organic, we are talking about an unbroken chain of purity. True organic cannot exist in isolation; it requires a perfect harmony between where we start and how we finish.</p>
         <p class="text-lg text-primary/80 dark:text-accent/80 mb-4 leading-relaxed">For us, it begins beneath the soil, partnering exclusively with trusted, certified farms where raw ingredients are grown naturally—entirely free from synthetic pesticides, chemical fertilizers, or GMOs. But a pure harvest is only half the battle; it can easily be ruined by heavy chemical processing. That is why our manufacturing steps are just as clean as our sourcing. We intentionally avoid artificial preservatives, chemical additives, and harsh refining methods to ensure that nature's integrity is preserved at every single step.</p>
@@ -331,14 +347,14 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 </section>
 
 <!-- Founder Section -->
-<section id="founder" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
+<section id="founder" class="reveal-section py-12 sm:py-16 bg-surface-light dark:bg-surface-dark" data-reveal="left">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row items-center gap-12">
-      <div class="lg:w-1/2">
+      <div class="reveal-item lg:w-1/2">
         <h2 class="text-3xl sm:text-4xl font-bold text-primary dark:text-accent mb-6">Founder</h2>
         <p class="text-lg text-primary/80 dark:text-accent/80 leading-relaxed">The heart of COCOPOY is our founder, Nandhini, whose passion for clean nutrition and planet-friendly living inspires our entire journey. She believes that what is good for your body should also be kind to the earth. Through her meticulous focus on quality and pure ingredients, Nandhini ensures that every COCOPOY product is more than just a snack—it's a mindful ritual of health and joy.</p>
       </div>
-      <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft relative transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
+      <div class="reveal-item lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft relative transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-72 sm:h-96 bg-cover bg-center" style="background-image: url('image/founder1.jpg');"></div>
         <div class="absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-500">
           <h3 class="text-white text-2xl font-bold">NANDHINI</h3>
@@ -760,6 +776,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load cart display
   updateCartDisplay();
   setupCartEventListeners();
+
+  // Scroll reveal animations
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      } else {
+        entry.target.classList.remove('revealed');
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.reveal-section').forEach(s => revealObserver.observe(s));
 
   // Load Instagram settings
   await loadInstagramSettings();
