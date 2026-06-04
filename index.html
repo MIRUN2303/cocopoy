@@ -760,12 +760,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       return match ? match[1] : '';
     }
 
-    const reels = reelUrls.map(u => extractReelId(u)).slice(0, 3);
-    const hasReel = reels.some(Boolean);
+    let reels = reelUrls.map(u => extractReelId(u)).slice(0, 3);
 
-    if (!hasReel) {
-      container.innerHTML = '';
-      return;
+    // Fallback sample reel if none configured yet
+    if (!reels.some(Boolean)) {
+      reels = ['DUIxnAck6vD', '', ''];
     }
 
     container.innerHTML = reels.map(reelId =>
