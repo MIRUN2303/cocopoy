@@ -752,11 +752,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (data?.value) {
           dbStatus = 'data-loaded';
           profileUrl = data.value.profile_url || '';
-          const raw = data.value.reel_urls || [];
+          console.log('[Instagram] Raw data from Supabase:', JSON.stringify(data.value));
+          let raw = data.value.reel_urls || data.value.reel_ids || [];
+          if (typeof raw === 'string') raw = [raw];
+          if (!Array.isArray(raw)) raw = [];
           reelIds = raw.map(u => {
             if (!u) return '';
             const m = u.match(/instagram\.com\/reel\/([^\/?#]+)/);
-            return m ? m[1] : '';
+            return m ? m[1] : (typeof u === 'string' ? u : '');
           }).filter(Boolean);
         } else {
           dbStatus = 'no-data';
