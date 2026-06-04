@@ -237,6 +237,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 @media (max-width: 767px) {
   #instagramReelsContainer { overflow-x: hidden; }
   #reelTrack { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+  #reelTrack > div { width: 100vw !important; }
 }
 
 </style>
@@ -862,12 +863,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const last = track.children[track.children.length - 1].outerHTML;
       track.innerHTML = last + track.innerHTML + first;
       current = 1;
+      goTo(current, false);
     }
 
     const goTo = (idx, smooth) => {
       if (isMobile) {
         track.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.16,1,0.3,1)' : 'none';
-        track.style.transform = `translateX(-${idx * 100}%)`;
+        track.style.transform = `translateX(-${idx * 100}vw)`;
       }
     };
 
