@@ -731,14 +731,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!container) return;
 
     let instagramUrl = 'https://www.instagram.com/';
-    let reelIds = ['', '', ''];
+    let reelUrls = ['', '', ''];
 
     try {
       if (typeof db !== 'undefined') {
         const { data, error } = await db.from('site_settings').select('value').eq('id', 'instagram').maybeSingle();
         if (!error && data?.value) {
           instagramUrl = data.value.profile_url || instagramUrl;
-          reelIds = data.value.reel_ids || reelIds;
+          reelUrls = data.value.reel_urls || data.value.reel_ids?.map(id => id ? `https://www.instagram.com/reel/${id}/` : '') || reelUrls;
         }
       }
     } catch (e) {
@@ -753,12 +753,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       'from-yellow-400 via-pink-500 to-purple-600'
     ];
 
-    container.innerHTML = reelIds.map((reelId, i) => {
-      const reelUrl = reelId ? `https://www.instagram.com/reel/${reelId}/` : instagramUrl;
+    // Extract reel ID from any URL format
+    function extractReelId(url) {
+      if (!url) return '';
+      const match = url.match(/instagram\.com\/reel\/([^\/?#]+)/);
+      return match ? match[1] : '';
+    }
+
+    container.innerHTML = reelUrls.map((url, i) => {
+      const reelId = extractReelId(url);
+      const cleanUrl = reelId ? `https://www.instagram.com/reel/${reelId}/` : '';
       return `
         <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl overflow-hidden border border-accent/10 bg-white/5">
-          ${reelId
-            ? `<blockquote class="instagram-media" data-instgrm-permalink="${reelUrl}" data-instgrm-version="14" style="width:100%;min-width:unset;max-width:100%;background:transparent"></blockquote>`
+          ${cleanUrl
+            ? `<blockquote class="instagram-media" data-instgrm-permalink="${cleanUrl}" data-instgrm-version="14" style="width:100%;min-width:unset;max-width:100%;background:transparent"></blockquote>`
             : `<div class="w-full h-[450px] bg-gradient-to-br ${gradients[i]} flex flex-col items-center justify-center gap-4 p-6 text-white/90">
                 <svg class="w-14 h-14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 010 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
                 <span class="text-sm font-semibold tracking-wider uppercase">Reel ${i + 1}</span>
