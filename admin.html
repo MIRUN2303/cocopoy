@@ -168,6 +168,7 @@ body { font-family:'Work Sans',sans-serif; -webkit-tap-highlight-color: transpar
     <button class="tab-btn" data-tab="messages">💬 Messages</button>
     <button class="tab-btn" data-tab="reviews">⭐ Reviews</button>
     <button class="tab-btn" data-tab="users">👤 Users</button>
+    <button class="tab-btn" data-tab="social">📱 Social</button>
   </div>
 
   <!-- Products Tab -->
@@ -257,6 +258,37 @@ body { font-family:'Work Sans',sans-serif; -webkit-tap-highlight-color: transpar
         <thead><tr><th>User Email</th><th>Current Name</th><th>Identity History (Previous Names)</th><th>Role</th><th>Joined</th></tr></thead>
         <tbody id="usersTableBody"><tr><td colspan="5" class="text-center text-text-muted-dark py-8">Loading users...</td></tr></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Social Tab -->
+  <div id="tab-social" class="tab-content hidden">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Social Media Settings</h2>
+    </div>
+    <div class="p-6 bg-surface-dark rounded-2xl border border-border-dark max-w-2xl">
+      <h3 class="text-lg font-bold text-secondary mb-6 border-b border-border-dark pb-3">Instagram</h3>
+      <form id="instagramForm" class="space-y-5">
+        <div>
+          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Instagram Profile URL</label>
+          <input class="admin-input" id="instagramProfileUrl" placeholder="https://www.instagram.com/yourprofile/" required/>
+        </div>
+        <div>
+          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 1 ID</label>
+          <input class="admin-input" id="instagramReel1" placeholder="e.g. CxYzAbCdEfG"/>
+          <p class="text-[10px] text-text-muted-dark mt-1 italic">The ID from the reel URL: instagram.com/reel/<strong class="text-secondary">THIS_PART</strong>/</p>
+        </div>
+        <div>
+          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 2 ID</label>
+          <input class="admin-input" id="instagramReel2" placeholder="e.g. CxYzAbCdEfG"/>
+        </div>
+        <div>
+          <label class="text-sm text-text-muted-dark font-semibold block mb-2">Reel 3 ID</label>
+          <input class="admin-input" id="instagramReel3" placeholder="e.g. CxYzAbCdEfG"/>
+        </div>
+        <button type="submit" id="saveInstagramBtn" class="admin-btn admin-btn-primary">Save Instagram Settings</button>
+      </form>
+      <div id="instagramStatus" class="mt-4 text-sm font-semibold hidden"></div>
     </div>
   </div>
 </main>
@@ -432,6 +464,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById('tab-'+btn.dataset.tab).classList.remove('hidden');
     if (btn.dataset.tab === 'reviews') loadReviewsTable();
     if (btn.dataset.tab === 'users') loadUsersTable();
+    if (btn.dataset.tab === 'social') loadInstagramSettings();
   });
 });
 
@@ -1095,6 +1128,57 @@ async function handleDeleteReview(id) {
     showToast('Failed to delete: ' + err.message, 'error');
   }
 }
+
+// Instagram Settings Form
+async function loadInstagramSettings() {
+  const status = document.getElementById('instagramStatus');
+  try {
+    const settings = await adminGetSetting('instagram');
+    if (settings) {
+      document.getElementById('instagramProfileUrl').value = settings.profile_url || '';
+      document.getElementById('instagramReel1').value = (settings.reel_ids && settings.reel_ids[0]) || '';
+      document.getElementById('instagramReel2').value = (settings.reel_ids && settings.reel_ids[1]) || '';
+      document.getElementById('instagramReel3').value = (settings.reel_ids && settings.reel_ids[2]) || '';
+    }
+    status.classList.add('hidden');
+  } catch (err) {
+    console.warn('Failed to load Instagram settings:', err);
+  }
+}
+
+document.getElementById('instagramForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('saveInstagramBtn');
+  const status = document.getElementById('instagramStatus');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  status.classList.add('hidden');
+
+  try {
+    const value = {
+      profile_url: document.getElementById('instagramProfileUrl').value.trim(),
+      reel_ids: [
+        document.getElementById('instagramReel1').value.trim(),
+        document.getElementById('instagramReel2').value.trim(),
+        document.getElementById('instagramReel3').value.trim()
+      ]
+    };
+    await adminUpdateSetting('instagram', value);
+    status.className = 'mt-4 text-sm font-semibold text-green-400';
+    status.textContent = '✅ Instagram settings saved successfully!';
+    status.classList.remove('hidden');
+    showToast('Instagram settings saved!', 'success');
+  } catch (err) {
+    status.className = 'mt-4 text-sm font-semibold text-red-400';
+    status.textContent = '❌ Error: ' + err.message;
+    status.classList.remove('hidden');
+    showToast('Failed to save: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
 
 // Logout
 document.getElementById('logoutBtn').addEventListener('click', () => signOut());

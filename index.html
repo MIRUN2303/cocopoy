@@ -11,14 +11,14 @@
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website"/>
-<meta property="og:url" content="https://cocopoy.netlify.app/"/>
+<meta property="og:url" content="https://mirun2303.github.io/frontend/"/>
 <meta property="og:title" content="Cocopoy | Authentic Natural Snacks & Farm Products from Pollachi"/>
 <meta property="og:description" content="Fresh, natural snacks and farm products from Pollachi. Order millets laddu, banana chips, murukku, and more. Traditionally crafted for your health."/>
 <meta property="og:image" content="https://cocopoy.com/image/logo/textlogo.png"/>
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image"/>
-<meta property="twitter:url" content="https://cocopoy.netlify.app/"/>
+<meta property="twitter:url" content="https://mirun2303.github.io/frontend/"/>
 <meta property="twitter:title" content="Cocopoy | Authentic Natural Snacks & Farm Products from Pollachi"/>
 <meta property="twitter:description" content="Fresh, natural snacks and farm products from Pollachi. Order millets laddu, banana chips, murukku, and more."/>
 <meta property="twitter:image" content="https://cocopoy.com/image/logo/textlogo.png"/>
@@ -42,7 +42,7 @@
     "latitude": 10.6620,
     "longitude": 77.0065
   },
-  "url": "https://cocopoy.netlify.app",
+  "url": "https://mirun2303.github.io/frontend",
   "telephone": "+910000000000",
   "priceRange": "₹",
   "openingHoursSpecification": [
@@ -200,6 +200,13 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   font-size: 10px;
   color: #fff;
 }
+
+/* Instagram Reels - scrollbar hide */
+.instagram-scroll::-webkit-scrollbar { display: none; }
+.instagram-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+.instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
+.instagram-reel-card iframe { pointer-events: auto; }
 </style>
 </head>
 <body class="bg-bg-light dark:bg-bg-dark font-display text-text-light dark:text-text-dark antialiased">
@@ -406,6 +413,19 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- Footer -->
 <footer class="bg-primary text-accent mt-16">
 <div class="container mx-auto px-6 py-12">
+
+<!-- Instagram Reels Section -->
+<div>
+  <h3 class="text-lg font-semibold uppercase tracking-wider text-center mb-6">Follow Us on Instagram</h3>
+  <div id="instagramReelsContainer" class="instagram-scroll flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth justify-center">
+    <!-- Reels loaded dynamically from settings -->
+  </div>
+  <div class="text-center mt-6 mb-10">
+    <a id="instagramProfileLink" href="https://www.instagram.com/" target="_blank" class="inline-block bg-secondary text-white font-semibold px-8 py-3 rounded-full hover:bg-secondary/90 transition-all transform hover:scale-105 shadow-lg">Visit Profile</a>
+  </div>
+</div>
+
+<div class="border-t border-accent/20 pt-8">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 <div class="md:col-span-1">
 <img src="image/logo/textlogo.png" alt="Cocopoy Logo" class="h-5 w-auto object-contain"/>
@@ -419,6 +439,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 </ul>
 </div>
 </div>
+</div>
+
 <div class="mt-12 border-t border-accent/20 pt-6 text-center text-accent/60 text-sm">© 2025 Cocopoy. All rights reserved.</div>
 </div>
 </footer>
@@ -695,6 +717,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load cart display
   updateCartDisplay();
   setupCartEventListeners();
+
+  // Load Instagram settings
+  await loadInstagramSettings();
+
+  async function loadInstagramSettings() {
+    const container = document.getElementById('instagramReelsContainer');
+    const profileLink = document.getElementById('instagramProfileLink');
+    if (!container) return;
+
+    let instagramUrl = 'https://www.instagram.com/';
+    let reelIds = ['', '', ''];
+
+    try {
+      if (typeof db !== 'undefined') {
+        const { data, error } = await db.from('site_settings').select('value').eq('id', 'instagram').maybeSingle();
+        if (!error && data?.value) {
+          instagramUrl = data.value.profile_url || instagramUrl;
+          reelIds = data.value.reel_ids || reelIds;
+        }
+      }
+    } catch (e) {
+      console.warn('Instagram settings not loaded from DB, using defaults');
+    }
+
+    profileLink.href = instagramUrl;
+
+    container.innerHTML = reelIds.map((reelId, i) => {
+      const embedUrl = reelId ? `https://www.instagram.com/reel/${reelId}/embed` : '';
+      return `
+        <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-xl overflow-hidden border border-accent/10 bg-white/5">
+          ${embedUrl
+            ? `<iframe src="${embedUrl}" width="100%" height="450" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full"></iframe>`
+            : `<div class="w-full h-[450px] flex items-center justify-center text-accent/30 text-sm font-semibold">Reel ${i + 1}</div>`
+          }
+        </div>
+      `;
+    }).join('');
+  }
 });
 </script>
 

@@ -86,6 +86,24 @@ async function adminGetStats() {
   };
 }
 
+// Get site settings by id
+async function adminGetSetting(settingId) {
+  const { data, error } = await db.from('site_settings').select('value').eq('id', settingId).maybeSingle();
+  if (error) throw error;
+  return data?.value || null;
+}
+
+// Update site settings
+async function adminUpdateSetting(settingId, value) {
+  const { data, error } = await db.from('site_settings').upsert({
+    id: settingId,
+    value: value,
+    updated_at: new Date().toISOString()
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
 async function adminCompleteRefund(orderId, screenshotData) {
   const { data: order } = await db.from('orders').select('delivery_info').eq('id', orderId).single();
   const info = order.delivery_info || {};
