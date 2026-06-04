@@ -220,24 +220,23 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 }
 
 /* Scroll reveal animations */
-.reveal-section { overflow: hidden; }
 .reveal-item {
   opacity: 0;
-  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
 .reveal-section[data-reveal="left"] .reveal-item {
-  transform: translateX(-60px) translateY(20px);
+  transform: translateX(-50px) translateY(15px);
 }
 .reveal-section[data-reveal="right"] .reveal-item {
-  transform: translateX(60px) translateY(20px);
+  transform: translateX(50px) translateY(15px);
 }
 .reveal-section.revealed .reveal-item {
   opacity: 1;
   transform: translateX(0) translateY(0);
 }
 .reveal-section.revealed .reveal-item:last-child {
-  transition-delay: 0.12s;
+  transition-delay: 0.1s;
 }
 
 /* Instagram Reels - scrollbar hide */
@@ -790,7 +789,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         entry.target.classList.remove('revealed');
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.05, rootMargin: '0px 0px 80px 0px' });
   document.querySelectorAll('.reveal-section').forEach(s => revealObserver.observe(s));
 
   // Load Instagram settings
