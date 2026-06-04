@@ -872,16 +872,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     if (prevBtn && nextBtn) {
+      const stopIframe = (idx) => {
+        const card = track.children[idx];
+        if (!card) return;
+        const f = card.querySelector('iframe');
+        if (f && f.src) f.src = '';
+      };
       prevBtn.onclick = () => {
+        stopIframe(current);
         current--;
         goTo(current, true);
         if (current <= 0) { setTimeout(() => { current = real.length; goTo(current, false); }, 380); }
       };
       nextBtn.onclick = () => {
+        stopIframe(current);
         current++;
         goTo(current, true);
         if (current >= real.length + 1) { setTimeout(() => { current = 1; goTo(current, false); }, 380); }
       };
+
+      // Stop all iframes when reels section scrolls out of view
+      const reelsSection = container.closest('.instagram-section') || container.parentElement;
+      const sectionObs = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) {
+          track.querySelectorAll('iframe').forEach(f => { if (f.src) f.src = ''; });
+        }
+      }, { threshold: 0 });
+      sectionObs.observe(reelsSection);
+    }
     }
   }
 });
