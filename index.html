@@ -221,9 +221,9 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 
 /* No scroll reveal animations */
 
-/* Mobile tighter line gap for About section */
+/* Mobile tighter layout for About section */
 @media (max-width: 1023px) {
-  #about p { line-height: 1.3; }
+  #about .flex { gap: 0.75rem; }
 }
 
 /* Instagram Reels - scrollbar hide */
@@ -313,13 +313,16 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 <!-- About Section -->
 <section id="about" class="py-12 sm:py-16 bg-surface-light dark:bg-surface-dark">
   <div class="container mx-auto px-6">
-    <div class="flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12">
+    <div class="flex flex-col lg:flex-row-reverse items-center gap-6 lg:gap-12">
+      <h2 class="lg:hidden text-xl font-bold text-primary dark:text-accent w-full text-center">About</h2>
+      <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
       <div class="lg:w-1/2 w-full rounded-lg overflow-hidden shadow-soft transition-transform duration-500 transform hover:scale-105 hover:shadow-xl">
         <div class="w-full h-56 sm:h-72 lg:h-96 bg-cover bg-center" style="background-image: url('./image/shop.jpg');"></div>
       </div>
-      <div class="lg:w-1/2">
-        <h2 class="text-xl sm:text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">About</h2>
-        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug">COCOPOY is where uncompromising flavour meets conscious living. We elevate everyday snacking into a premium experience by pairing exceptional taste with clean, meticulously sourced ingredients. Every creation in our range is a testament to guilt-free luxury—thoughtfully crafted for your well-being and deeply rooted in a passion for sustainable quality. Because nourishing your body should always feel like an indulgence.</p>
+      <hr class="lg:hidden w-full border-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"/>
+      <div class="lg:w-1/2 w-full">
+        <h2 class="hidden lg:block text-3xl lg:text-4xl font-bold text-primary dark:text-accent mb-4 lg:mb-6">About</h2>
+        <p class="text-sm sm:text-base lg:text-lg text-primary/80 dark:text-accent/80 leading-snug lg:leading-relaxed">COCOPOY is where uncompromising flavour meets conscious living. We elevate everyday snacking into a premium experience by pairing exceptional taste with clean, meticulously sourced ingredients. Every creation in our range is a testament to guilt-free luxury—thoughtfully crafted for your well-being and deeply rooted in a passion for sustainable quality. Because nourishing your body should always feel like an indulgence.</p>
       </div>
     </div>
   </div>
