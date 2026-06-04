@@ -757,51 +757,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     while (reels.length < 3) reels.push('');
 
-    window.playInstagramReel = function(el, reelId) {
-      el.innerHTML = `<iframe src="https://www.instagram.com/reel/${reelId}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full h-full"></iframe>`;
-    };
-
-    container.innerHTML = reels.map((reelId, i) => {
-      if (!reelId) {
-        return `<div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl border border-white/5 relative" style="height:480px"></div>`;
-      }
-      return `
-        <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/10 relative shadow-lg shadow-black/20" style="height:480px;background:#1a1a2e">
-          <div class="relative w-full h-full cursor-pointer group" onclick="playInstagramReel(this,'${reelId}')">
-            <img id="ig-thumb-${i}" class="w-full h-full object-cover" alt="" style="opacity:0;transition:opacity 0.4s"/>
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-6 h-6 text-black ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
+    container.innerHTML = reels.map(reelId =>
+      reelId
+        ? `
+          <div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl overflow-hidden border border-white/10 relative shadow-lg shadow-black/20" style="height:520px">
+            <iframe src="https://www.instagram.com/reel/${reelId}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allow="autoplay; encrypted-media" class="w-full h-full" style="pointer-events:auto"></iframe>
           </div>
-        </div>
-      `;
-    }).join('');
-
-    reels.forEach(async (reelId, i) => {
-      if (!reelId) return;
-      const img = document.getElementById(`ig-thumb-${i}`);
-      if (!img) return;
-      const oembedUrl = `https://api.instagram.com/oembed?url=https://www.instagram.com/reel/${reelId}/`;
-      const proxies = [
-        () => fetch(oembedUrl),
-        () => fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(oembedUrl)}`),
-        () => fetch(`https://corsproxy.io/?url=${encodeURIComponent(oembedUrl)}`),
-      ];
-      for (const proxy of proxies) {
-        try {
-          const res = await proxy();
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (data?.thumbnail_url) {
-            img.src = data.thumbnail_url;
-            img.onload = () => { img.style.opacity = '1'; };
-            return;
-          }
-        } catch (e) {}
-      }
-    });
+        `
+        : `<div class="instagram-reel-card flex-shrink-0 w-64 sm:w-72 snap-center rounded-2xl border border-white/5 relative" style="height:520px"></div>`
+    ).join('');
   }
 });
 </script>
