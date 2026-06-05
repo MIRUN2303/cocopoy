@@ -104,6 +104,15 @@ async function adminUpdateSetting(settingId, value) {
   return data;
 }
 
+// Mark order as paid
+async function adminMarkOrderPaid(orderId) {
+  const { data: order } = await db.from('orders').select('delivery_info').eq('id', orderId).single();
+  const info = { ...(order.delivery_info || {}) };
+  info.payment_details = { ...(info.payment_details || {}), payment_status: 'paid' };
+  const { error } = await db.from('orders').update({ delivery_info: info }).eq('id', orderId);
+  if (error) throw error;
+}
+
 async function adminCompleteRefund(orderId, screenshotData) {
   const { data: order } = await db.from('orders').select('delivery_info').eq('id', orderId).single();
   const info = order.delivery_info || {};

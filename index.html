@@ -233,6 +233,52 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 .instagram-reel-card { transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 450px; }
 .instagram-reel-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(244,124,32,0.15); }
 
+/* Floating Cart Button */
+#floatingCartBtn {
+  position: fixed; z-index: 100; cursor: pointer; user-select: none; -webkit-user-select: none;
+  bottom: 24px; right: 24px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: none;
+}
+#floatingCartBtn .cart-body {
+  display: flex; align-items: center; gap: 8px;
+  background: #F47C20; color: white; font-weight: 900;
+  padding: 12px 20px; border-radius: 999px;
+  box-shadow: 0 8px 25px rgba(244,124,32,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#floatingCartBtn .cart-body:hover { transform: scale(1.05); box-shadow: 0 12px 35px rgba(244,124,32,0.45); }
+#floatingCartBtn .cart-body:active { transform: scale(0.95); }
+#floatingCartBtn .cart-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px;
+  background: rgba(255,255,255,0.2); border-radius: 999px;
+  font-size: 11px; padding: 0 6px;
+}
+@keyframes cart-pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+#floatingCartBtn.pop-in { animation: cart-pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+@keyframes float-arrow {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+@media (max-width: 767px) {
+  #floatingCartBtn { bottom: 16px; right: 16px; }
+  #floatingCartBtn .cart-body { padding: 14px 18px; box-shadow: 0 8px 30px rgba(244,124,32,0.4); }
+  #floatingCartBtn.hidden-state { transform: translateY(70px) scale(0.7); opacity: 0.15; pointer-events: none; }
+  #floatingCartBtn.hidden-state .cart-body { box-shadow: none; }
+  #floatingCartBtn .cart-arrow {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    color: #F47C20; width: 26px; height: 26px;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  #floatingCartBtn.hidden-state .cart-arrow { opacity: 1; animation: float-arrow 2s ease-in-out infinite; }
+  #floatingCartBtn.pop-in .cart-arrow { display: none !important; opacity: 0 !important; }
+}
+
 </style>
 </head>
 <body class="bg-bg-light dark:bg-bg-dark font-display text-text-light dark:text-text-dark antialiased">
@@ -776,6 +822,63 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCartDisplay();
   setupCartEventListeners();
 
+  // Floating Cart Button Logic
+  const floatBtn = document.getElementById('floatingCartBtn');
+  const floatCount = document.getElementById('floatCartCount');
+  let mobileHideTimer = null;
+  let touchStartY = 0;
+
+  async function updateFloatCart() {
+    const user = await getCurrentUser();
+    if (!user) { floatBtn.classList.add('hidden'); return; }
+    const cart = await getCart();
+    if (cart.length > 0) {
+      const totals = calculateCartTotal(cart);
+      floatCount.textContent = totals.totalItems;
+      floatBtn.classList.remove('hidden');
+      floatBtn.classList.remove('hidden-state');
+      floatBtn.classList.add('pop-in');
+      setTimeout(() => floatBtn.classList.remove('pop-in'), 400);
+      if (window.innerWidth < 768) {
+        clearTimeout(mobileHideTimer);
+        mobileHideTimer = setTimeout(() => {
+          if (!floatBtn.matches(':hover')) floatBtn.classList.add('hidden-state');
+        }, 2000);
+      }
+    } else {
+      floatBtn.classList.add('hidden');
+    }
+  }
+
+  // Drag up on mobile to reveal
+  floatBtn.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  floatBtn.addEventListener('touchmove', (e) => {
+    const dy = touchStartY - e.touches[0].clientY;
+    if (dy > 15 && floatBtn.classList.contains('hidden-state')) {
+      floatBtn.classList.remove('hidden-state');
+      clearTimeout(mobileHideTimer);
+    }
+  }, { passive: true });
+
+  // Restart hide timer on mouse enter/leave (mobile)
+  floatBtn.addEventListener('mouseenter', () => { clearTimeout(mobileHideTimer); });
+  floatBtn.addEventListener('mouseleave', () => {
+    if (window.innerWidth < 768) {
+      mobileHideTimer = setTimeout(() => floatBtn.classList.add('hidden-state'), 2000);
+    }
+  });
+
+  // Hook into cart updates
+  const _origUpdateCart = window.updateCartDisplay;
+  window.updateCartDisplay = async function() {
+    await _origUpdateCart.apply(this, arguments);
+    updateFloatCart();
+  };
+
+  (async () => {
+    setTimeout(updateFloatCart, 500);
+  })();
+
   async function loadInstagramSettings() {
     const track = document.getElementById('reelTrack');
     if (!track) return;
@@ -854,6 +957,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadInstagramSettings();
 });
 </script>
+
+<!-- Floating Cart Button -->
+<div id="floatingCartBtn" class="hidden" onclick="document.getElementById('cart-section').scrollIntoView({behavior:'smooth'})">
+  <svg class="cart-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 5v14M5 12l7 7 7-7"/>
+  </svg>
+  <div class="cart-body">
+    <span>🛒</span>
+    <span class="cart-count" id="floatCartCount">0</span>
+  </div>
+</div>
 
 <!-- Offline Detection -->
 <script>
