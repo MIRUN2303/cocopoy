@@ -186,12 +186,20 @@ async function navigateToAdmin() {
 }
 window.navigateToAdmin = navigateToAdmin;
 
-// Auto-redirect to admin page after refresh
+// Auto-redirect to admin page after refresh (direct call, no flag re-set = no loop)
 (function() {
   if (sessionStorage.getItem('adminActive') === 'true') {
     sessionStorage.removeItem('adminActive');
-    if (typeof navigateToAdmin === 'function') {
-      navigateToAdmin();
-    }
+    requireAdmin().then(function(user) {
+      if (!user) return;
+      if (typeof renderAdminPanel !== 'function') {
+        var s = document.createElement('script');
+        s.src = 'js/admin-page.js?' + Date.now();
+        s.onload = function() { renderAdminPanel(); };
+        document.head.appendChild(s);
+      } else {
+        renderAdminPanel();
+      }
+    });
   }
 })();
