@@ -161,8 +161,8 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 @keyframes spin { to { transform:rotate(360deg); } }
 @media (max-width: 767px) {
   header .container { padding-top:0.5rem;padding-bottom:0.5rem; }
-  #siteSearchBar { transform:translateY(4.85rem) translateX(0);left:0.85rem;right:0.85rem;width:auto; }
-  .search-shell { border-radius:0.95rem; }
+  #siteSearchBar { transform:translateY(4.85rem) translateX(0);left:0.85rem;right:0.85rem;width:auto;border-radius:999px; }
+  .search-shell { border-radius:999px; }
   #siteSearchBar.search-attached { transform:translateY(0.55rem) translateX(0);left:auto;right:4.5rem;width:2.95rem;height:2.95rem;overflow:hidden;transition:all 0.35s cubic-bezier(0.4,0,0.2,1); }
   #siteSearchBar.search-attached:hover, #siteSearchBar.search-attached:focus-within { transform:translateY(4.5rem);right:1rem;width:calc(100vw - 2rem);height:auto; }
   #siteSearchBar.search-attached .search-shell { border-radius:999px;width:100%;height:100%;padding:0.35rem !important;background:transparent;box-shadow:none;transition:all 0.3s;display:flex;align-items:center; }
@@ -244,7 +244,7 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   display: flex; align-items: center; gap: 8px;
   background: #2c0077; color: white; font-weight: 900;
   padding: 12px 20px; border-radius: 999px;
-  border: 1.5px solid rgba(187, 148, 255, 0.5);
+  border: 1.0px solid rgb(196, 144, 255);
   box-shadow: 0 0 18px rgba(187, 148, 255, 0.35), 0 0 40px rgba(124,58,237,0.08), inset 0 0 8px rgba(187,148,255,0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -275,17 +275,19 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   #floatingCartBtn { bottom: 16px; right: 16px; }
   #floatingCartBtn .cart-body { padding: 14px 18px; box-shadow: 0 0 18px rgba(124,58,237,0.35), 0 0 40px rgba(124,58,237,0.08); transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
   #floatingCartBtn.hidden-state {
-    transform: translateX(16px) translateY(-8px);
-    opacity: 0.6;
+    right: 0;
+    bottom: 16px;
+    transform: none;
+    opacity: 1;
     pointer-events: auto;
   }
   #floatingCartBtn.hidden-state .cart-body {
-    box-shadow: none !important;
-    padding: 10px 10px;
-    border-radius: 999px;
-    background: rgba(124,58,237,0.5);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.08);
+    padding: 18px 8px 18px 16px;
+    border-radius: 16px 0 0 16px;
+    background: #2c0077;
+    border: 1.5px solid rgba(187, 148, 255, 0.5);
+    border-right: none;
+    box-shadow: -4px 0 18px rgba(124,58,237,0.35), -4px 0 8px rgba(124,58,237,0.1);
   }
   #floatingCartBtn.hidden-state .cart-body span:first-child { display: none; }
   #floatingCartBtn.hidden-state .cart-count { display: none; }
@@ -962,8 +964,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const real = reelIds.filter(Boolean);
 
+    // On mobile, repeat the 3 reels in 1,2,3,1,2,3,1,2,3 pattern
+    const isMobile = window.innerWidth < 768;
+    const reelSource = isMobile && real.length === 3 ? [...real, ...real, ...real] : real;
+
     // Build placeholder cards with data-src for lazy loading
-    track.innerHTML = real.map((id, i) => id
+    track.innerHTML = reelSource.map((id, i) => id
       ? `<div class="flex-shrink-0 w-[85vw] md:w-96 snap-center rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/20 reel-card" style="height:500px;background:#0a0a14" data-index="${i}">
           <iframe data-src="https://www.instagram.com/reel/${id}/embed" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen style="background:#0a0a14"></iframe>
          </div>`
