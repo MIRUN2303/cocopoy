@@ -163,6 +163,7 @@ async function requireAdmin() {
 
 // Navigate to admin panel — loads admin page dynamically (no admin.html file exists)
 async function navigateToAdmin() {
+  sessionStorage.setItem('adminActive', 'true');
   const user = await requireAdmin();
   if (!user) return;
 
@@ -184,3 +185,13 @@ async function navigateToAdmin() {
   renderAdminPanel();
 }
 window.navigateToAdmin = navigateToAdmin;
+
+// Auto-redirect to admin page after refresh
+(function() {
+  if (sessionStorage.getItem('adminActive') === 'true') {
+    sessionStorage.removeItem('adminActive');
+    if (typeof navigateToAdmin === 'function') {
+      navigateToAdmin();
+    }
+  }
+})();
