@@ -273,21 +273,22 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 
 @media (max-width: 767px) {
   #floatingCartBtn { bottom: 16px; right: 16px; }
-  #floatingCartBtn .cart-body { padding: 14px 18px; box-shadow: 0 0 18px rgba(124,58,237,0.35), 0 0 40px rgba(124,58,237,0.08); transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
+  #floatingCartBtn .cart-body { position: relative; padding: 14px 18px; box-shadow: 0 0 18px rgba(124,58,237,0.35), 0 0 40px rgba(124,58,237,0.08); transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
   #floatingCartBtn.hidden-state {
     right: 0;
-    bottom: 16px;
+    bottom: 0;
     transform: none;
     opacity: 1;
     pointer-events: auto;
   }
   #floatingCartBtn.hidden-state .cart-body {
-    padding: 14px 4px 14px 14px;
-    border-radius: 999px 0 0 999px;
+    padding: 20px 8px 8px 20px;
+    border-radius: 999px 0 0 0;
     background: #2c0077;
     border: 1.5px solid rgba(187, 148, 255, 0.5);
     border-right: none;
-    box-shadow: -4px 0 18px rgba(124,58,237,0.35);
+    border-bottom: none;
+    box-shadow: -4px -4px 18px rgba(124,58,237,0.35);
   }
   #floatingCartBtn.hidden-state .cart-body span:first-child { display: none; }
   #floatingCartBtn.hidden-state .cart-count { display: none; }
@@ -1040,10 +1041,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 <!-- Floating Cart Button -->
 <div id="floatingCartBtn" class="hidden">
-  <svg class="cart-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
   <div class="cart-body">
+    <svg class="cart-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
     <span>🛒</span>
     <span class="cart-count" id="floatCartCount">0</span>
   </div>
