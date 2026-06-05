@@ -274,23 +274,23 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   #floatingCartBtn { bottom: 16px; right: 16px; }
   #floatingCartBtn .cart-body { padding: 14px 18px; box-shadow: 0 0 18px rgba(124,58,237,0.35), 0 0 40px rgba(124,58,237,0.08); transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
   #floatingCartBtn.hidden-state {
-    transform: translateX(36px);
-    opacity: 0.55;
+    transform: translateX(16px) translateY(-8px);
+    opacity: 0.6;
     pointer-events: auto;
   }
   #floatingCartBtn.hidden-state .cart-body {
     box-shadow: none !important;
-    padding: 10px 6px;
+    padding: 10px 10px;
     border-radius: 999px;
-    background: rgba(124,58,237,0.55);
+    background: rgba(124,58,237,0.5);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.08);
   }
   #floatingCartBtn.hidden-state .cart-body span:first-child { display: none; }
   #floatingCartBtn.hidden-state .cart-count { display: none; }
   #floatingCartBtn .cart-arrow {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-    color: white; width: 22px; height: 22px;
+    color: white; width: 16px; height: 16px;
     opacity: 0; transition: opacity 0.3s ease;
     filter: drop-shadow(0 0 6px rgba(124,58,237,0.5));
   }
