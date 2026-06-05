@@ -277,13 +277,13 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   #floatingCartBtn .cart-arrow { display: none; }
 }
 @media (max-width: 767px) {
-  #floatingCartBtn { bottom: 12px; right: 12px; }
+  #floatingCartBtn { bottom: 16px; right: 16px; }
   #floatingCartBtn .cart-body { padding: 14px 18px; box-shadow: 0 8px 30px rgba(244,124,32,0.4); }
-  #floatingCartBtn.hidden-state { transform: scale(0.55); opacity: 0.35; }
+  #floatingCartBtn.hidden-state { transform: translateY(70px) scale(0.7); opacity: 0.15; pointer-events: none; }
   #floatingCartBtn.hidden-state .cart-body { box-shadow: none; }
   #floatingCartBtn .cart-arrow {
-    position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
-    color: #F47C20; width: 22px; height: 22px;
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    color: #F47C20; width: 26px; height: 26px;
     opacity: 0; transition: opacity 0.3s ease;
   }
   #floatingCartBtn.hidden-state .cart-arrow { opacity: 1; animation: float-arrow 2s ease-in-out infinite; }
@@ -861,16 +861,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Click: reveal if hidden, then scroll to cart
-  floatBtn.addEventListener('click', () => {
-    if (floatBtn.classList.contains('hidden-state')) {
-      floatBtn.classList.remove('hidden-state');
-      clearTimeout(mobileHideTimer);
-    } else {
-      document.getElementById('cart-section').scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-
   // Drag up on mobile to reveal
   floatBtn.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
   floatBtn.addEventListener('touchmove', (e) => {
@@ -980,9 +970,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <!-- Floating Cart Button -->
-<div id="floatingCartBtn" class="hidden">
+<div id="floatingCartBtn" class="hidden" onclick="document.getElementById('cart-section').scrollIntoView({behavior:'smooth'})">
   <svg class="cart-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 19V5M5 12l7-7 7 7"/>
+    <path d="M12 5v14M5 12l7 7 7-7"/>
   </svg>
   <div class="cart-body">
     <span>🛒</span>
