@@ -265,17 +265,35 @@ img { max-width: 100%; height: auto; object-fit: cover; }
   0%, 100% { transform: translateY(0); opacity: 0.6; }
   50% { transform: translateY(-4px); opacity: 1; }
 }
+/* Desktop: hide arrow */
+@media (min-width: 768px) {
+  #floatingCartBtn .cart-arrow { display: none; }
+}
+
 @media (max-width: 767px) {
   #floatingCartBtn { bottom: 16px; right: 16px; }
   #floatingCartBtn .cart-body { padding: 14px 18px; box-shadow: 0 8px 30px rgba(244,124,32,0.4); }
-  #floatingCartBtn.hidden-state { transform: translateY(70px) scale(0.7); opacity: 0.15; pointer-events: none; }
-  #floatingCartBtn.hidden-state .cart-body { box-shadow: none; }
+  #floatingCartBtn.hidden-state {
+    transform: translateX(68px);
+    opacity: 0.35;
+    pointer-events: auto;
+  }
+  #floatingCartBtn.hidden-state .cart-body {
+    box-shadow: none;
+    padding: 14px 10px;
+    border-radius: 999px 0 0 999px;
+  }
+  #floatingCartBtn.hidden-state .cart-count { display: none; }
+  #floatingCartBtn.hidden-state .cart-body span:first-child { margin-right: -4px; }
   #floatingCartBtn .cart-arrow {
-    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-    color: #F47C20; width: 26px; height: 26px;
+    position: absolute; left: -18px; top: 50%; transform: translateY(-50%);
+    color: #F47C20; width: 20px; height: 20px;
     opacity: 0; transition: opacity 0.3s ease;
   }
-  #floatingCartBtn.hidden-state .cart-arrow { opacity: 1; animation: float-arrow 2s ease-in-out infinite; }
+  #floatingCartBtn.hidden-state .cart-arrow {
+    opacity: 1;
+    animation: float-arrow 2s ease-in-out infinite;
+  }
   #floatingCartBtn.pop-in .cart-arrow { display: none !important; opacity: 0 !important; }
 }
 
@@ -848,13 +866,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (window.innerWidth < 768) {
         clearTimeout(mobileHideTimer);
         mobileHideTimer = setTimeout(() => {
-          if (!floatBtn.matches(':hover')) floatBtn.classList.add('hidden-state');
+          floatBtn.classList.add('hidden-state');
         }, 2000);
       }
     } else {
       floatBtn.classList.add('hidden');
     }
   }
+
+  // Click: reveal if hidden, else scroll to cart
+  floatBtn.addEventListener('click', () => {
+    if (floatBtn.classList.contains('hidden-state')) {
+      floatBtn.classList.remove('hidden-state');
+      floatBtn.classList.add('pop-in');
+      setTimeout(() => floatBtn.classList.remove('pop-in'), 400);
+      clearTimeout(mobileHideTimer);
+      if (window.innerWidth < 768) {
+        mobileHideTimer = setTimeout(() => {
+          floatBtn.classList.add('hidden-state');
+        }, 2000);
+      }
+    } else {
+      document.getElementById('cart-section').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
 
   // Drag up on mobile to reveal
   floatBtn.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
@@ -865,14 +900,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       clearTimeout(mobileHideTimer);
     }
   }, { passive: true });
-
-  // Restart hide timer on mouse enter/leave (mobile)
-  floatBtn.addEventListener('mouseenter', () => { clearTimeout(mobileHideTimer); });
-  floatBtn.addEventListener('mouseleave', () => {
-    if (window.innerWidth < 768) {
-      mobileHideTimer = setTimeout(() => floatBtn.classList.add('hidden-state'), 2000);
-    }
-  });
 
   // Hook into cart updates
   const _origUpdateCart = window.updateCartDisplay;
@@ -965,9 +992,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <!-- Floating Cart Button -->
-<div id="floatingCartBtn" class="hidden" onclick="document.getElementById('cart-section').scrollIntoView({behavior:'smooth'})">
+<div id="floatingCartBtn" class="hidden">
   <svg class="cart-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 5v14M5 12l7 7 7-7"/>
+    <path d="M19 12H5M12 19l-7-7 7-7"/>
   </svg>
   <div class="cart-body">
     <span>🛒</span>
