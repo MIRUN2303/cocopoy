@@ -282,12 +282,12 @@ img { max-width: 100%; height: auto; object-fit: cover; }
     pointer-events: auto;
   }
   #floatingCartBtn.hidden-state .cart-body {
-    padding: 18px 8px 18px 16px;
-    border-radius: 16px 0 0 16px;
+    padding: 14px 4px 14px 14px;
+    border-radius: 999px 0 0 999px;
     background: #2c0077;
     border: 1.5px solid rgba(187, 148, 255, 0.5);
     border-right: none;
-    box-shadow: -4px 0 18px rgba(124,58,237,0.35), -4px 0 8px rgba(124,58,237,0.1);
+    box-shadow: -4px 0 18px rgba(124,58,237,0.35);
   }
   #floatingCartBtn.hidden-state .cart-body span:first-child { display: none; }
   #floatingCartBtn.hidden-state .cart-count { display: none; }
@@ -964,9 +964,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const real = reelIds.filter(Boolean);
 
-    // On mobile, repeat the 3 reels in 1,2,3,1,2,3,1,2,3 pattern
+    // On mobile, repeat for infinite scroll feel
     const isMobile = window.innerWidth < 768;
-    const reelSource = isMobile && real.length === 3 ? [...real, ...real, ...real] : real;
+    let reelSource = real;
+    if (isMobile && real.length > 0) {
+      const repeats = Math.ceil(30 / real.length);
+      reelSource = Array.from({ length: repeats }, () => [...real]).flat();
+    }
 
     // Build placeholder cards with data-src for lazy loading
     track.innerHTML = reelSource.map((id, i) => id
@@ -994,6 +998,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         f.src = f.dataset.src;
         f.removeAttribute('data-src');
       });
+    }
+
+    // Auto-play reels: cycle every 4s on mobile
+    if (isMobile && real.length > 0) {
+      let reelIndex = 0;
+      let autoTimer = setInterval(() => {
+        const cards = track.querySelectorAll('.reel-card');
+        if (!cards.length) return;
+        reelIndex = (reelIndex + 1) % cards.length;
+        cards[reelIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }, 4000);
+      let idleTimer;
+      const stopAuto = () => { clearInterval(autoTimer); clearTimeout(idleTimer); };
+      const startAuto = (idx) => {
+        reelIndex = idx;
+        autoTimer = setInterval(() => {
+          const cards = track.querySelectorAll('.reel-card');
+          if (!cards.length) return;
+          reelIndex = (reelIndex + 1) % cards.length;
+          cards[reelIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }, 4000);
+      };
+      const delayRestart = () => {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          const idx = Math.round(track.scrollLeft / track.offsetWidth);
+          startAuto(idx);
+        }, 8000);
+      };
+      track.addEventListener('touchstart', stopAuto, { passive: true });
+      track.addEventListener('touchend', delayRestart, { passive: true });
+      track.addEventListener('scroll', () => { stopAuto(); delayRestart(); }, { passive: true });
     }
   }
 
