@@ -12,7 +12,7 @@ var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ADMIN_EMAIL = 'cocopoyindia@gmail.com';
 
 // UPI Payment Config
-const UPI_ID = 'cocopoy@axl';
+const UPI_ID = 'Q261913400@ybl';
 const UPI_PAYEE_NAME = 'Cocopoy';
 
 // Store location (for delivery calculator)

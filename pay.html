@@ -126,7 +126,7 @@
                         <p style="font-size:0.78rem; font-weight:800; color:#DC2626; line-height:1.5;">
                             ⚠️ UPI deep links are not supported on iPhone or Desktop.<br>
                             Please open your payment app manually and pay to:<br>
-                            <span style="font-size:1rem; color:var(--primary); display:block; margin-top:4px;" id="manual-upi-id">cocopoy@axl</span>
+                            <span style="font-size:1rem; color:var(--primary); display:block; margin-top:4px;" id="manual-upi-id">Q261913400@ybl</span>
                         </p>
                     </div>
                 </div>
@@ -188,7 +188,7 @@
 
             // Build the single universal UPI URL — Android OS shows an app chooser
             // MUST be in <a href> tapped directly by user; JS-triggered nav is blocked by browsers
-            const upiId = typeof UPI_ID !== 'undefined' ? UPI_ID : 'cocopoy@axl';
+            const upiId = typeof UPI_ID !== 'undefined' ? UPI_ID : 'Q261913400@ybl';
             alert('UPI ID being used: ' + upiId);
             const upiName = typeof UPI_PAYEE_NAME !== 'undefined' ? UPI_PAYEE_NAME : 'Cocopoy';
             const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
