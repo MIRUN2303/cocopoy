@@ -48,7 +48,6 @@ async function updateHeaderAuth() {
       const profile = await getUserProfile();
       const admin = await isAdmin();
       const displayName = profile?.full_name || user.user_metadata?.full_name || user.email.split('@')[0];
-      const customerId = user.id.substring(0, 8).toUpperCase();
 
       const userGreetingHTML = `
         <div class="hidden lg:flex items-center gap-3 mr-4">
@@ -57,23 +56,22 @@ async function updateHeaderAuth() {
               ⚙ Admin Panel
             </a>
           ` : ''}
-          <div class="flex flex-col items-end">
-            <span class="text-[10px] font-bold text-secondary uppercase tracking-widest leading-tight">ID: ${customerId}</span>
-            <span class="text-xs font-bold text-primary dark:text-accent opacity-60 uppercase tracking-widest">Hello, ${displayName}</span>
+          <div class="flex flex-col items-end leading-tight">
+            <span class="text-[11px] font-black text-secondary uppercase tracking-widest">Hello</span>
+            <span class="text-xs font-bold text-primary dark:text-accent uppercase tracking-widest">${displayName}</span>
           </div>
         </div>
       `;
-      const logoutBtnHTML = `<button class="logoutBtn auth-pill auth-pill-soft hover:text-secondary transition-colors">Logout</button>`;
 
-      if (authDiv) authDiv.innerHTML = userGreetingHTML + logoutBtnHTML;
+      if (authDiv) authDiv.innerHTML = userGreetingHTML;
       if (mobileAuthDiv) {
         mobileAuthDiv.innerHTML = `
           <div class="px-2 pb-4 border-b border-secondary/10 mb-2">
             ${admin ? `<a href="javascript:void(0)" onclick="navigateToAdmin()" class="w-full mb-3 flex items-center justify-center gap-2 bg-secondary text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest">⚙ OPEN ADMIN PANEL</a>` : ''}
-            <p class="text-[10px] font-bold text-secondary uppercase">ID: ${customerId}</p>
-            <p class="text-xs font-bold text-primary opacity-50 uppercase">User: ${displayName}</p>
+            <p class="text-[11px] font-black text-secondary uppercase tracking-widest">Hello</p>
+            <p class="text-xs font-bold text-primary opacity-80 uppercase">${displayName}</p>
           </div>
-        ` + logoutBtnHTML;
+        `;
       }
 
       if (profileLink) profileLink.style.display = 'inline-flex';
@@ -94,21 +92,6 @@ async function updateHeaderAuth() {
   }
 }
 
-// Global Event Listener for Logout
-document.addEventListener('click', async (e) => {
-  const btn = e.target.closest('.logoutBtn');
-  if (btn) {
-    e.preventDefault();
-    btn.disabled = true;
-    btn.textContent = 'Signing out...';
-    try {
-      if (window.signOut) await window.signOut();
-      else { localStorage.clear(); window.location.href = 'index.html'; }
-    } catch (err) {
-      localStorage.clear(); window.location.href = 'index.html';
-    }
-  }
-});
 
 // Run update on load
 document.addEventListener('DOMContentLoaded', updateHeaderAuth);
