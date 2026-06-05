@@ -123,6 +123,12 @@ img { max-width: 100%; height: auto; object-fit: cover; }
 #siteSearchBar.search-attached .search-input { opacity:0;width:0;padding:0;transition:opacity 0.2s;font-size:0.875rem;text-align:left; }
 #siteSearchBar.search-attached:hover .search-input, #siteSearchBar.search-attached:focus-within .search-input { opacity:1;width:100%;padding-left:0.5rem; }
 #siteSearchBar.search-attached #clearSearch { display:none !important; }
+/* Desktop: search only pops OUT of header on click, no hover expansion */
+@media (min-width: 768px) {
+  #siteSearchBar.search-attached:hover, #siteSearchBar.search-attached:focus-within { width:2.95rem;height:2.95rem; }
+  #siteSearchBar.search-attached:hover .search-shell, #siteSearchBar.search-attached:focus-within .search-shell { background:transparent;border-color:transparent; }
+  #siteSearchBar.search-attached:hover .search-input, #siteSearchBar.search-attached:focus-within .search-input { opacity:0;width:0;padding:0; }
+}
 #siteSearchBar.search-attached.search-popout {
   transform: translateY(5.45rem) translateX(-50%) !important;
   left: 50% !important;
