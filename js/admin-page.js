@@ -7,7 +7,10 @@ function renderAdminPanel() {
   if (typeof requireAdmin !== 'function') { window.location.href = 'index.html'; return; }
   requireAdmin().then(function(user) {
     if (!user) return;
-    var html = atob(window.ADMIN_PAGE_BASE64);
+    var binary = atob(window.ADMIN_PAGE_BASE64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    var html = new TextDecoder('utf-8').decode(bytes);
     document.open();
     document.write(html);
     document.close();
