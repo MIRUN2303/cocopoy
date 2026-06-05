@@ -24,7 +24,3 @@ const STORE_LOCATION = {
 
 // Shipping cost
 const SHIPPING_COST = 50;
-
-// PhonePe Payment Gateway config
-const PHONEPE_EDGE_FN = `${SUPABASE_URL}/functions/v1/phonepe-pay`;
-const PHONEPE_MERCHANT_ID = ''; // Set after KYC

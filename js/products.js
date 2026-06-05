@@ -116,7 +116,7 @@ function renderProductCards(products, containerId = 'productsGrid') {
           <div class="flex items-center justify-center bg-primary/5 dark:bg-primary/20 rounded-xl p-1 md:p-1.5 border border-primary/10">
             <div class="flex items-center gap-3 md:gap-4">
               <button type="button" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center bg-white dark:bg-surface-dark rounded-lg text-primary dark:text-accent font-black text-lg shadow-sm hover:bg-secondary hover:text-white transition-all active:scale-90 product-qty-minus">-</button>
-              <input type="number" value="0" min="0" max="${product.stock || 99}" class="w-7 md:w-8 bg-transparent border-0 p-0 text-center text-sm md:text-base font-black text-primary dark:text-accent focus:ring-0 product-qty-input" />
+              <input type="number" value="0" min="0" max="${product.stock || 99}" class="w-7 md:w-8 bg-transparent border-0 p-0 text-center text-sm md:text-base font-black text-primary dark:text-accent focus:ring-0 product-qty-input" readonly />
               <button type="button" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center bg-white dark:bg-surface-dark rounded-lg text-primary dark:text-accent font-black text-lg shadow-sm hover:bg-secondary hover:text-white transition-all active:scale-90 product-qty-plus">+</button>
             </div>
           </div>

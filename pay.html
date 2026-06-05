@@ -8,66 +8,147 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0B113D; --accent: #F47C20; --surface: #FFFFFF; --bg: #F3F4F6; }
+        :root { --primary: #0B113D; --accent: #F47C20; --success: #22C55E; --surface: #FFFFFF; --bg: #F3F4F6; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--primary); padding: 15px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        
         .terminal { background: var(--surface); width: 100%; max-width: 400px; border-radius: 32px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); padding: 24px; position: relative; overflow: hidden; margin-top: 10px; }
         .terminal::before { content:''; position:absolute; top:0; left:0; right:0; height:8px; background: linear-gradient(90deg, var(--accent), var(--primary)); }
+
         .amount-section { text-align: center; margin-bottom: 24px; }
         .amount-label { font-size: 0.75rem; font-weight: 800; color: #9CA3AF; text-transform: uppercase; margin-bottom: 4px; }
         .amount { font-size: 3rem; font-weight: 900; letter-spacing: -2px; }
-        .section { padding: 20px; border-radius: 24px; border: 2px solid #F3F4F6; }
-        .pay-btn { width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:900; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.2s; }
-        .pay-btn:active { transform:scale(0.97); }
-        .pay-btn:disabled { opacity:0.6; cursor:not-allowed; }
-        .status-box { text-align:center; padding:30px; }
-        .status-box .icon { font-size:3rem; margin-bottom:15px; }
-        .status-box .msg { font-weight:800; font-size:1.1rem; color:var(--primary); }
-        #success-modal { position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px; }
-        .modal-content { background:white; width:100%; max-width:360px; padding:40px 30px; border-radius:40px; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.3); animation:modalIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
-        @keyframes modalIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
-        .success-icon { width:80px; height:80px; background:#ECFDF5; color:#10B981; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 24px; }
-        .modal-title { font-size:2rem; font-weight:900; color:var(--primary); margin-bottom:8px; }
-        .modal-desc { font-size:1rem; color:#6B7280; font-weight:600; margin-bottom:30px; line-height:1.5; }
-        .dashboard-btn { background:var(--accent); color:white; border:none; width:100%; padding:18px; border-radius:20px; font-weight:900; font-size:1.1rem; cursor:pointer; box-shadow:0 10px 20px rgba(244,124,32,0.3); }
+        
+        .step-container { display: flex; flex-direction: column; gap: 20px; }
+        .section { padding: 20px; border-radius: 24px; border: 2px solid #F3F4F6; transition: all 0.3s ease; }
+        
+        .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .step-num { width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; }
+        .step-title { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+        .note-display { background: #FFFBEB; padding: 15px; border-radius: 14px; text-align: center; border: 2px dashed #F59E0B; margin-bottom: 15px; }
+        .note-val { font-family: monospace; font-size: 1.6rem; font-weight: 900; color: var(--accent); display: block; word-break: break-all; }
+        
+        .copy-btn { background: #F59E0B; color: white; border: none; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.1rem; box-shadow: 0 4px 0 #D97706; transition: all 0.1s; }
+        .copy-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #D97706; }
+
+        .app-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .app-btn { display: flex; align-items: center; justify-content: center; background: white; border: 2px solid #E5E7EB; padding: 16px; border-radius: 18px; text-decoration: none; color: var(--primary); font-weight: 800; font-size: 1.1rem; transition: all 0.2s; }
+        .app-btn:active { border-color: var(--accent); transform: scale(0.98); }
+
+        .upload-box { background: #F0FDF4; border: 2px dashed #10B981; border-radius: 20px; padding: 30px; text-align: center; cursor: pointer; }
+        .upload-icon { font-size: 2rem; margin-bottom: 10px; }
+        .upload-text { color: #065F46; font-weight: 900; font-size: 0.9rem; }
+        #preview { width: 100%; height: 160px; object-fit: cover; border-radius: 16px; margin-top: 15px; display: none; border: 4px solid white; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+
+        .submit-btn { width: 100%; max-width: 400px; padding: 22px; background: var(--primary); color: white; border: none; border-radius: 24px; font-weight: 900; font-size: 1.4rem; margin-top: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(11,17,61,0.4); display: none; }
+        .submit-btn.visible { display: block; animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        @keyframes slideIn { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .toast { position: fixed; bottom: 40px; background: #222; color: white; padding: 15px 30px; border-radius: 99px; font-size: 0.9rem; font-weight: 800; display: none; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        
+        .alert-box { background: #FEF2F2; border: 1px solid #FECACA; padding: 12px; border-radius: 14px; margin-bottom: 15px; }
+        .alert-text { font-size: 0.75rem; font-weight: 800; color: #DC2626; line-height: 1.4; }
+
+        /* Success Modal Styles */
+        #success-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 360px; padding: 40px 30px; border-radius: 40px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.3); animation: modalIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes modalIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .success-icon { width: 80px; height: 80px; background: #ECFDF5; color: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 24px; }
+        .modal-title { font-size: 2rem; font-weight: 900; color: var(--primary); margin-bottom: 8px; }
+        .modal-desc { font-size: 1rem; color: #6B7280; font-weight: 600; margin-bottom: 30px; line-height: 1.5; }
+        .dashboard-btn { background: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 20px; font-weight: 900; font-size: 1.1rem; cursor: pointer; box-shadow: 0 10px 20px rgba(244,124,32,0.3); }
     </style>
 </head>
 <body>
 
     <div class="terminal">
         <div class="amount-section">
-            <p class="amount-label">Total Payable</p>
+            <p class="amount-label">Final Payable Amount</p>
             <div class="amount">₹<span id="display-amount">0.00</span></div>
         </div>
 
-        <div class="section" style="margin-bottom:12px;">
-            <button id="btn-pay-now" class="pay-btn">
-                💳 PAY ₹<span id="pay-amount-display">0</span>
-            </button>
-            <div id="payment-loading" style="display:none; text-align:center; padding:20px;">
-                <div style="font-size:2rem; margin-bottom:10px;">⏳</div>
-                <p style="font-weight:800; color:var(--primary);">Redirecting to secure payment page...</p>
+        <div class="step-container">
+            <!-- STEP 1: COPY ID -->
+            <div id="section-1" class="section">
+                <div class="step-header">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Verification Code</div>
+                </div>
+                <div class="alert-box">
+                    <p class="alert-text">
+                        ⚠️ <strong>MUST COPY THIS ID FIRST.</strong> Paste it in the "Note" field of your payment app. <br><br>
+                        <em>Note: If you miss it, send your Name & ID as a message in the payment app after paying.</em>
+                    </p>
+                </div>
+                <div class="note-display">
+                    <span id="note-text" class="note-val">FETCHING ID...</span>
+                </div>
+                <input type="text" id="copy-helper" style="position:fixed; top:-999px; opacity:0;" value="">
+                <button id="btn-copy" class="copy-btn">CLICK TO COPY ID</button>
+            </div>
+
+            <!-- COMBINED STEP 2 & 3: PAY & UPLOAD -->
+            <div id="combined-section" style="display:none" class="space-y-4">
+                
+                <!-- STEP 2: UPLOAD PROOF (Now at the Top to grab attention) -->
+                <div id="section-3" class="section">
+                    <div class="step-header">
+                        <div class="step-num">2</div>
+                        <div class="step-title">Upload Payment Proof</div>
+                    </div>
+                    <p class="alert-text" style="color:#065F46; margin-bottom:12px; font-size: 0.8rem;">
+                        <strong>ATTENTION:</strong> After paying in the app below, you <u>MUST</u> return here and upload the success screenshot.
+                    </p>
+                    <div class="upload-box" id="upload-trigger">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">CLICK TO UPLOAD SCREENSHOT AFTER PAYING</div>
+                        <input type="file" id="file-input" accept="image/*" style="display:none">
+                        <img id="preview">
+                    </div>
+                </div>
+
+                <!-- STEP 3: CHOOSE APP -->
+                <div id="section-2" class="section">
+                    <div class="step-header">
+                        <div class="step-num">3</div>
+                        <div class="step-title">Choose App to Pay</div>
+                    </div>
+                    <!-- upi:// href set dynamically at load; direct anchor tap is the ONLY way Android allows custom schemes -->
+                    <div class="app-list">
+                        <a id="link-gpay" href="#" class="app-btn app-choice">Pay with Google Pay (GPay)</a>
+                        <a id="link-phonepe" href="#" class="app-btn app-choice">Pay with PhonePe</a>
+                        <a id="link-paytm" href="#" class="app-btn app-choice">Pay with Paytm</a>
+                    </div>
+                    <!-- iOS / Desktop notice -->
+                    <div id="ios-notice" style="display:none; margin-top:14px; background:#FEF2F2; border:1px solid #FECACA; border-radius:12px; padding:12px; text-align:center;">
+                        <p style="font-size:0.78rem; font-weight:800; color:#DC2626; line-height:1.5;">
+                            ⚠️ UPI deep links are not supported on iPhone or Desktop.<br>
+                            Please open your payment app manually and pay to:<br>
+                            <span style="font-size:1rem; color:var(--primary); display:block; margin-top:4px;" id="manual-upi-id">Q261913400@ybl</span>
+                        </p>
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <div id="section-verify" class="section" style="display:none;">
-            <div class="status-box">
-                <div class="icon" id="verify-icon">⏳</div>
-                <p class="msg" id="verify-msg">Verifying your payment...</p>
-            </div>
-        </div>
-
-        <a href="cococart.html" style="display:block; text-align:center; margin-top:16px; color:#9CA3AF; font-size:0.8rem; font-weight:700; text-decoration:none;">✕ CANCEL & BACK</a>
     </div>
 
+    <button id="btn-final" class="submit-btn">PLACE ORDER NOW</button>
+    <a href="cococart.html" style="margin: 20px 0; color: #9CA3AF; font-size: 0.8rem; font-weight: 700; text-decoration: none;">✕ CANCEL & BACK</a>
+
+    <!-- Success Modal -->
     <div id="success-modal">
         <div class="modal-content">
             <div class="success-icon">✅</div>
             <h2 class="modal-title">Order Placed!</h2>
-            <p class="modal-desc">Your order is confirmed. We'll process it shortly.</p>
+            <p class="modal-desc">Thank you for shopping with Cocopoy. Your order has been recorded. You can check your order status there always!</p>
             <button onclick="window.location.href='cocoorders.html'" class="dashboard-btn">VIEW ORDER STATUS</button>
         </div>
     </div>
+
+    <div id="toast" class="toast">ID Copied! Proceed to Payment.</div>
 
     <!-- SDKs & Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -86,115 +167,149 @@
             let pending = {};
             try {
                 const stored = localStorage.getItem('pending_order_data');
-                if (stored && stored !== 'undefined') pending = JSON.parse(stored);
-            } catch (e) {}
-
-            const sPay = document.querySelector('.section');
-            const sVerify = document.getElementById('section-verify');
-            const btnPayNow = document.getElementById('btn-pay-now');
-            const payLoading = document.getElementById('payment-loading');
-            const verifyIcon = document.getElementById('verify-icon');
-            const verifyMsg = document.getElementById('verify-msg');
-
+                if (stored && stored !== 'undefined') {
+                    pending = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.warn('Could not parse pending_order_data', e);
+            }
+            
+            // Prioritize the transaction note passed in URL, fallback to stored or default
+            let note = params.get('tn');
+            if (!note) {
+                const cId = pending.customerId || 'COCO_PAY';
+                const cName = (pending.customerName || '').replace(/\s+/g, '_');
+                note = cName ? `${cName}_${cId}` : cId;
+            }
+            
             document.getElementById('display-amount').textContent = amount;
-            document.getElementById('pay-amount-display').textContent = amount;
+            document.getElementById('note-text').textContent = note;
+            document.getElementById('copy-helper').value = note;
 
-            const callbackCode = params.get('code');
-            const callbackTxnId = params.get('transactionId');
+            // Build the single universal UPI URL — Android OS shows an app chooser
+            // MUST be in <a href> tapped directly by user; JS-triggered nav is blocked by browsers
+            const upiId = typeof UPI_ID !== 'undefined' ? UPI_ID : 'Q261913400@ybl';
+            alert('UPI ID being used: ' + upiId);
+            const upiName = typeof UPI_PAYEE_NAME !== 'undefined' ? UPI_PAYEE_NAME : 'Cocopoy';
+            const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
 
-            if (callbackCode && callbackTxnId) {
-                sPay.style.display = 'none';
-                sVerify.style.display = 'block';
-                handlePaymentCallback(callbackCode, callbackTxnId);
+            document.getElementById('link-gpay').href = upiUrl;
+            document.getElementById('link-phonepe').href = upiUrl;
+            document.getElementById('link-paytm').href = upiUrl;
+            document.getElementById('manual-upi-id').textContent = upiId;
+
+            // iOS / Desktop detection — show notice instead of broken links
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isDesktop = !/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+            if (isIOS || isDesktop) {
+                document.getElementById('ios-notice').style.display = 'block';
+                ['link-gpay','link-phonepe','link-paytm'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.style.opacity = '0.4';
+                    el.style.pointerEvents = 'none';
+                });
             }
 
-            btnPayNow.onclick = async function() {
-                this.style.display = 'none';
-                payLoading.style.display = 'block';
-                try {
-                    const merchantTransactionId = `COCO_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
-                    const redirectUrl = window.location.href.split('?')[0] + '?am=' + amount;
+            // When any app link is tapped, reveal Step 3 after user returns
+            document.querySelectorAll('.app-choice').forEach(a => {
+                a.addEventListener('click', () => {
+                    setTimeout(() => {
+                        document.getElementById('section-3').style.display = 'block';
+                        document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' });
+                    }, 1500);
+                });
+            });
 
-                    const edgeFn = typeof PHONEPE_EDGE_FN !== 'undefined'
-                        ? PHONEPE_EDGE_FN
-                        : SUPABASE_URL + '/functions/v1/phonepe-pay';
+            const s1 = document.getElementById('section-1');
+            const btnCopy = document.getElementById('btn-copy');
+            const copyHelper = document.getElementById('copy-helper');
+            const btnFinal = document.getElementById('btn-final');
+            const fileInput = document.getElementById('file-input');
 
-                    const res = await fetch(edgeFn + '/initiate', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ amount: parseFloat(amount), merchantTransactionId, redirectUrl })
-                    });
-                    const data = await res.json();
-                    if (data.success && data.data?.instrumentResponse?.redirectInfo?.url) {
-                        localStorage.setItem('pp_txn_id', merchantTransactionId);
-                        window.location.href = data.data.instrumentResponse.redirectInfo.url;
-                    } else {
-                        throw new Error(data.message || 'Failed to initiate payment');
-                    }
-                } catch (err) {
-                    alert('Payment failed: ' + err.message);
-                    this.style.display = 'flex';
-                    payLoading.style.display = 'none';
-                }
+            // 1. Copy -> Show Step 2
+            btnCopy.onclick = function() {
+                copyHelper.select();
+                copyHelper.setSelectionRange(0, 9999);
+                try { document.execCommand('copy'); } catch(e) {}
+                if (navigator.clipboard) navigator.clipboard.writeText(note);
+
+                document.getElementById('toast').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('toast').style.display = 'none';
+                    s1.style.display = 'none';
+                    document.getElementById('combined-section').style.display = 'block';
+                }, 700);
             };
 
-            async function handlePaymentCallback(code, txnId) {
-                if (code !== 'PAYMENT_SUCCESS') {
-                    verifyIcon.textContent = '❌';
-                    verifyMsg.textContent = 'Payment was not completed. Try again.';
-                    verifyMsg.style.color = '#DC2626';
-                    setTimeout(() => window.location.href = 'cococart.html', 3000);
-                    return;
-                }
+            // 2. App Selection -> Show Step 3 Below
+            document.querySelectorAll('.app-choice').forEach(btn => {
+                btn.onclick = function() {
+                    setTimeout(() => {
+                        document.getElementById('section-3').style.display = 'block';
+                        document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' });
+                    }, 1200);
+                };
+            });
 
-                verifyMsg.textContent = 'Payment confirmed! Placing your order...';
+            // 3. Upload -> Final Button
+            document.getElementById('upload-trigger').onclick = () => fileInput.click();
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const prev = document.getElementById('preview');
+                    prev.src = ev.target.result;
+                    prev.style.display = 'block';
+                    document.querySelector('.upload-icon').style.display = 'none';
+                    document.querySelector('.upload-text').textContent = '✅ PROOF ATTACHED';
+                    btnFinal.classList.add('visible');
+                    btnFinal.scrollIntoView({ behavior: 'smooth' });
+                };
+                reader.readAsDataURL(file);
+            };
+
+            // 4. Final Place Order (Move Database logic here as requested)
+            btnFinal.onclick = async function() {
+                this.textContent = 'Finalizing Order...';
+                this.disabled = true;
+
                 try {
-                    const edgeFn = typeof PHONEPE_EDGE_FN !== 'undefined'
-                        ? PHONEPE_EDGE_FN
-                        : SUPABASE_URL + '/functions/v1/phonepe-pay';
-
-                    const res = await fetch(edgeFn + '/status', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ merchantTransactionId: txnId })
-                    });
-                    const statusData = await res.json();
-
-                    if (!statusData.success || statusData.code !== 'PAYMENT_SUCCESS') {
-                        throw new Error('Payment verification failed');
-                    }
-
-                    let p = {};
+                    let pending = {};
                     try {
                         const stored = localStorage.getItem('pending_order_data');
-                        if (stored && stored !== 'undefined') p = JSON.parse(stored);
-                    } catch(e) {}
-                    if (!p.deliveryAddress) throw new Error('Missing order data. Please return to cart.');
+                        if (stored && stored !== 'undefined') {
+                            pending = JSON.parse(stored);
+                        }
+                    } catch (e) {
+                        console.warn('Could not parse pending_order_data', e);
+                    }
+                    if (!pending.deliveryAddress) throw new Error('Missing order data. Please return to cart.');
 
-                    const ppRef = statusData.data?.paymentInstrument?.utr || statusData.data?.transactionId || '';
-                    const info = p.latestDeliveryInfo || {};
-                    info.payment_details = {
-                        payment_status: 'paid',
-                        phonepe_txn_id: txnId,
-                        phonepe_ref_id: ppRef,
-                        amount: amount
+                    const info = pending.latestDeliveryInfo || {};
+                    info.payment_proof = document.getElementById('preview').src;
+                    info.payment_details = { 
+                        upi_note_used: note,
+                        assumed_name: pending.customerName,
+                        customer_id: pending.customerId
                     };
 
-                    await placeOrder(p.deliveryAddress, info, 'phonepe_pg');
+                    // Insert to Database
+                    const order = await placeOrder(pending.deliveryAddress, info, 'upi');
+                    
+                    // Clear pending flags
                     localStorage.removeItem('pending_order_data');
                     localStorage.removeItem('pay_done');
-                    localStorage.removeItem('pp_txn_id');
 
-                    verifyIcon.textContent = '✅';
-                    verifyMsg.textContent = 'Order placed successfully!';
-                    verifyMsg.style.color = '#10B981';
-                    setTimeout(() => document.getElementById('success-modal').style.display = 'flex', 800);
+                    // Show Popup on THIS page
+                    document.getElementById('success-modal').style.display = 'flex';
                 } catch (err) {
-                    verifyIcon.textContent = '❌';
-                    verifyMsg.textContent = err.message;
-                    verifyMsg.style.color = '#DC2626';
+                    console.error('Order Finalization Error:', err);
+                    alert('Order failed: ' + err.message);
+                    this.textContent = 'PLACE ORDER NOW';
+                    this.disabled = false;
                 }
-            }
+            };
         })();
     </script>
 </body>
