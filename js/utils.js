@@ -53,7 +53,7 @@ async function updateHeaderAuth() {
       const userGreetingHTML = `
         <div class="hidden lg:flex items-center gap-3 mr-4">
           ${admin ? `
-            <a href="admin.html" class="flex items-center gap-2 bg-secondary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg hover:scale-105 transition-transform">
+            <a href="javascript:void(0)" onclick="navigateToAdmin()" class="flex items-center gap-2 bg-secondary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg hover:scale-105 transition-transform">
               ⚙ Admin Panel
             </a>
           ` : ''}
@@ -69,7 +69,7 @@ async function updateHeaderAuth() {
       if (mobileAuthDiv) {
         mobileAuthDiv.innerHTML = `
           <div class="px-2 pb-4 border-b border-secondary/10 mb-2">
-            ${admin ? `<a href="admin.html" class="w-full mb-3 flex items-center justify-center gap-2 bg-secondary text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest">⚙ OPEN ADMIN PANEL</a>` : ''}
+            ${admin ? `<a href="javascript:void(0)" onclick="navigateToAdmin()" class="w-full mb-3 flex items-center justify-center gap-2 bg-secondary text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest">⚙ OPEN ADMIN PANEL</a>` : ''}
             <p class="text-[10px] font-bold text-secondary uppercase">ID: ${customerId}</p>
             <p class="text-xs font-bold text-primary opacity-50 uppercase">User: ${displayName}</p>
           </div>

@@ -160,3 +160,27 @@ async function requireAdmin() {
   }
   return user;
 }
+
+// Navigate to admin panel — loads admin page dynamically (no admin.html file exists)
+async function navigateToAdmin() {
+  const user = await requireAdmin();
+  if (!user) return;
+
+  if (typeof renderAdminPanel !== 'function') {
+    try {
+      await new Promise(function(resolve, reject) {
+        var script = document.createElement('script');
+        script.src = 'js/admin-page.js?' + Date.now();
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    } catch (e) {
+      window.location.href = 'index.html';
+      return;
+    }
+  }
+
+  renderAdminPanel();
+}
+window.navigateToAdmin = navigateToAdmin;
